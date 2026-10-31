@@ -1,0 +1,2097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory House — a little home for all the moments that made you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Nunito+Sans:wght@400;500;600;700;800&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS ============================= */
+:root{
+  --cream:#F7F1E6;
+  --paper:#FBF7EE;
+  --beige:#EDE1C7;
+  --sage:#8FA688;
+  --sage-dark:#6C8566;
+  --pink:#E3A9A0;
+  --terracotta:#C97A56;
+  --brown:#5B4636;
+  --brown-soft:#8A7561;
+  --yellow:#E8B84B;
+  --lavender:#B7A6D6;
+  --ink:#3E3226;
+  --line: rgba(91,70,54,0.14);
+  --shadow: 0 10px 30px rgba(91,70,54,0.12);
+  --shadow-sm: 0 4px 14px rgba(91,70,54,0.10);
+  --radius: 18px;
+  --radius-sm: 12px;
+  --display: 'Fraunces', Georgia, serif;
+  --body: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --accent-font: 'Caveat', cursive;
+  --accent: var(--terracotta);
+}
+[data-theme="botanical"]{ --accent: var(--sage-dark); --pink:#CBD9A6; --beige:#E7E9D4; }
+[data-theme="sakura"]{ --accent: var(--pink); --beige:#F6E3E6; --sage:#C9A0A6; }
+[data-theme="library"]{ --accent: var(--brown); --beige:#E4D6BC; --cream:#F2E9D6; --paper:#F7F0DE; }
+[data-theme="mansion"]{ --accent: #7C5A3A; --beige:#E7DBC4; --lavender:#9C86B8; }
+[data-theme="midnight"]{ --accent: var(--lavender); --cream:#2C2A3A; --paper:#34324A; --beige:#3B3852; --ink:#EDE7F5; --line:rgba(237,231,245,0.14); --brown-soft:#C7BEDD; }
+[data-theme="cloud"]{ --accent: #8FB3D9; --beige:#E7EFF6; --cream:#F5F8FB; --paper:#FAFCFE; }
+body.dark{ --cream:#28241f; --paper:#312c25; --beige:#3a332a; --ink:#EFE6D8; --line:rgba(239,230,216,0.14); --brown-soft:#c9bba7; --shadow: 0 10px 30px rgba(0,0,0,0.35); }
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--body);
+  background:var(--cream);
+  color:var(--ink);
+  overflow-x:hidden;
+  transition:background .4s ease, color .4s ease;
+  min-height:100vh;
+}
+h1,h2,h3,h4{font-family:var(--display); font-weight:600; margin:0 0 .3em; color:var(--ink);}
+p{margin:0 0 .6em; line-height:1.55;}
+a{color:inherit;}
+button{font-family:var(--body); cursor:pointer;}
+.accent-font{font-family:var(--accent-font);}
+::selection{background:var(--pink); color:var(--brown);}
+:focus-visible{outline:3px solid var(--terracotta); outline-offset:2px; border-radius:6px;}
+@media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;} }
+.hidden{display:none !important;}
+.screen{min-height:100vh; width:100%;}
+.container{max-width:1180px; margin:0 auto; padding:0 24px;}
+.btn{
+  border:none; border-radius:999px; padding:14px 28px; font-size:15px; font-weight:700;
+  background:var(--terracotta); color:#fff; box-shadow:var(--shadow-sm); transition:transform .15s ease, box-shadow .15s ease, background .2s;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.btn:hover{transform:translateY(-2px); box-shadow:var(--shadow);}
+.btn:active{transform:translateY(0);}
+.btn.secondary{background:transparent; color:var(--brown); border:2px solid var(--brown); box-shadow:none; padding:12px 26px;}
+.btn.ghost{background:var(--beige); color:var(--brown); box-shadow:none;}
+.btn.small{padding:8px 16px; font-size:13px;}
+.btn.danger{background:#b95c50;}
+.btn:disabled{opacity:.5; cursor:not-allowed; transform:none;}
+.card{background:var(--paper); border-radius:var(--radius); box-shadow:var(--shadow-sm); padding:22px; border:1px solid var(--line);}
+.pill{display:inline-flex; align-items:center; gap:6px; background:var(--beige); border-radius:999px; padding:5px 13px; font-size:12.5px; font-weight:700; color:var(--brown-soft);}
+.grid{display:grid; gap:18px;}
+input[type=text],input[type=email],input[type=password],input[type=date],input[type=number],input[type=url],textarea,select{
+  width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line); background:var(--cream); color:var(--ink);
+  font-family:var(--body); font-size:14.5px; transition:border-color .15s;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--terracotta); outline:none;}
+textarea{resize:vertical; min-height:90px;}
+label.field-label{display:block; font-weight:700; font-size:13px; margin:14px 0 6px; color:var(--brown-soft); letter-spacing:.02em;}
+.field-row{display:flex; gap:12px; flex-wrap:wrap;}
+.field-row > *{flex:1; min-width:140px;}
+.choice-row{display:flex; flex-wrap:wrap; gap:8px;}
+.choice-chip{border:1.5px solid var(--line); background:var(--cream); border-radius:999px; padding:8px 14px; font-size:13.5px; font-weight:600; color:var(--brown-soft);}
+.choice-chip.active{background:var(--terracotta); color:#fff; border-color:var(--terracotta);}
+.checkbox-row{display:flex; align-items:center; gap:8px; margin-top:10px;}
+.checkbox-row input{width:auto;}
+
+/* ============================= LANDING ============================= */
+#screen-landing{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  padding:60px 20px; position:relative; overflow:hidden;
+}
+.sky-decor{position:absolute; inset:0; pointer-events:none; overflow:hidden;}
+.cloud{position:absolute; opacity:.6; animation:driftCloud 60s linear infinite;}
+.cloud svg{width:100%; height:100%;}
+@keyframes driftCloud{from{transform:translateX(-10vw);} to{transform:translateX(110vw);}}
+.landing-content{max-width:620px; position:relative; z-index:2;}
+.landing-house{width:min(70vw,320px); margin:0 auto 12px; filter:drop-shadow(0 20px 25px rgba(91,70,54,.18));}
+.landing-content h1{font-size:clamp(38px,7vw,58px); margin-bottom:6px;}
+.landing-content .subtitle{font-family:var(--accent-font); font-size:clamp(22px,4vw,28px); color:var(--terracotta); margin-bottom:28px;}
+.landing-btns{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:18px;}
+.small-note{font-size:13px; color:var(--brown-soft);}
+
+/* ============================= AUTH ============================= */
+#screen-auth{display:flex; align-items:center; justify-content:center; padding:40px 16px;}
+.auth-card{max-width:440px; width:100%; padding:36px;}
+.auth-tabs{display:flex; gap:6px; background:var(--beige); border-radius:999px; padding:4px; margin-bottom:22px;}
+.auth-tab{flex:1; border:none; background:transparent; padding:10px; border-radius:999px; font-weight:700; color:var(--brown-soft);}
+.auth-tab.active{background:var(--paper); color:var(--terracotta); box-shadow:var(--shadow-sm);}
+.demo-note{background:var(--beige); border-radius:12px; padding:10px 14px; font-size:12.5px; color:var(--brown-soft); margin-top:16px; text-align:center;}
+.pw-wrap{position:relative;}
+.pw-toggle{position:absolute; right:10px; top:9px; background:none; border:none; font-size:12px; color:var(--terracotta); font-weight:700;}
+.form-error{color:#b95c50; font-size:13px; margin-top:6px; min-height:16px;}
+.auth-foot{display:flex; justify-content:space-between; align-items:center; margin-top:16px; font-size:13px;}
+
+/* ============================= ONBOARDING ============================= */
+#screen-onboarding{display:flex; align-items:center; justify-content:center; padding:40px 16px;}
+.onboard-card{max-width:560px; width:100%; padding:40px; text-align:center;}
+.theme-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; margin:18px 0;}
+.theme-opt{border:2px solid var(--line); border-radius:14px; padding:16px 10px; background:var(--cream); text-align:center;}
+.theme-opt.active{border-color:var(--terracotta); background:var(--beige);}
+.theme-opt .emoji{font-size:28px; display:block; margin-bottom:6px;}
+.theme-opt .label{font-size:12.5px; font-weight:700;}
+
+/* ============================= APP SHELL ============================= */
+#screen-app{display:none;}
+#screen-app.active{display:flex; min-height:100vh;}
+.sidebar{
+  width:230px; flex-shrink:0; background:var(--paper); border-right:1px solid var(--line);
+  padding:22px 14px; display:flex; flex-direction:column; gap:4px; position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.side-brand{display:flex; align-items:center; gap:8px; padding:6px 10px 18px; font-family:var(--display); font-weight:700; font-size:19px;}
+.nav-item{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; border:none; background:none;
+  text-align:left; font-weight:700; font-size:14px; color:var(--brown-soft); width:100%;
+}
+.nav-item:hover{background:var(--beige);}
+.nav-item.active{background:var(--terracotta); color:#fff;}
+.nav-icon{font-size:17px; width:20px; text-align:center;}
+.nav-section-label{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--brown-soft); opacity:.65; margin:14px 10px 4px;}
+.main-col{flex:1; min-width:0; display:flex; flex-direction:column;}
+.topbar{
+  position:sticky; top:0; z-index:20; background:var(--cream); border-bottom:1px solid var(--line);
+  padding:14px 26px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(6px);
+}
+.topbar .search-wrap{flex:1; max-width:420px; position:relative;}
+.topbar input[type=text]{padding-left:36px; background:var(--paper);}
+.topbar .search-wrap::before{content:"🔍"; position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:14px;}
+.topbar-right{display:flex; align-items:center; gap:10px; margin-left:auto;}
+.points-badge{display:flex; align-items:center; gap:6px; background:var(--yellow); color:var(--brown); font-weight:800; padding:8px 14px; border-radius:999px; font-size:13.5px;}
+.content{padding:26px; flex:1; padding-bottom:90px;}
+.view-header{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:22px;}
+.view-header h2{font-size:28px; margin:0;}
+.view-header .sub{color:var(--brown-soft); font-size:14px; margin-top:2px;}
+
+/* mobile bottom nav */
+.bottom-nav{
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:30; background:var(--paper);
+  border-top:1px solid var(--line); padding:8px 4px calc(8px + env(safe-area-inset-bottom));
+  justify-content:space-around; box-shadow:0 -4px 14px rgba(0,0,0,.06);
+}
+.bottom-nav button{background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:10.5px; font-weight:700; color:var(--brown-soft); padding:4px 6px;}
+.bottom-nav button.active{color:var(--terracotta);}
+.bottom-nav .b-icon{font-size:19px;}
+
+/* ============================= HOUSE VIEW ============================= */
+.house-wrap{display:flex; gap:26px; flex-wrap:wrap; align-items:flex-start;}
+.house-stage{flex:1; min-width:320px; background:linear-gradient(180deg, var(--beige) 0%, var(--cream) 60%); border-radius:var(--radius); padding:20px; position:relative; overflow:hidden; box-shadow:var(--shadow-sm);}
+.house-svg-holder{position:relative; width:100%;}
+.house-svg-holder svg{width:100%; height:auto; display:block;}
+.room-hit{cursor:pointer; transition:opacity .2s;}
+.room-hit:hover .room-fill{filter:brightness(1.08);}
+.room-label{font-family:var(--body); font-weight:800; pointer-events:none;}
+.level-panel{width:280px; flex-shrink:0;}
+.progress-track{background:var(--beige); border-radius:999px; height:12px; overflow:hidden; margin:10px 0 6px;}
+.progress-fill{height:100%; background:linear-gradient(90deg,var(--terracotta),var(--yellow)); border-radius:999px; transition:width .6s ease;}
+.side-actions{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+.house-flourish{position:absolute; pointer-events:none;}
+@keyframes sway{0%,100%{transform:rotate(-2deg);} 50%{transform:rotate(2deg);}}
+@keyframes drift{0%{transform:translateX(0);} 100%{transform:translateX(14px);}}
+@keyframes twinkle{0%,100%{opacity:.3;} 50%{opacity:1;}}
+@keyframes float-y{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
+
+/* ============================= GENERIC LIST / CARDS ============================= */
+.item-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:16px;}
+.item-card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-sm); padding:16px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:6px; position:relative;}
+.item-card .top-row{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+.item-card h4{font-size:16px; margin:0;}
+.item-card .meta{font-size:12px; color:var(--brown-soft);}
+.item-card .desc{font-size:13.5px; color:var(--ink); opacity:.9;}
+.item-card .tags{display:flex; flex-wrap:wrap; gap:5px; margin-top:4px;}
+.tag-chip{background:var(--beige); border-radius:999px; padding:3px 10px; font-size:11px; font-weight:700; color:var(--brown-soft); border:none; cursor:pointer;}
+.card-actions{display:flex; gap:6px; margin-top:auto; padding-top:8px;}
+.icon-btn{background:var(--beige); border:none; border-radius:8px; width:30px; height:30px; font-size:14px; display:flex; align-items:center; justify-content:center;}
+.icon-btn.fav.active{background:var(--yellow);}
+.polaroid{background:#fff; padding:8px 8px 24px; border-radius:4px; box-shadow:0 6px 16px rgba(0,0,0,.15); transform:rotate(var(--rot,-2deg)); transition:transform .2s;}
+.polaroid:hover{transform:rotate(0deg) scale(1.03);}
+.polaroid .photo-area{width:100%; aspect-ratio:1/1; border-radius:2px; overflow:hidden; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; font-size:34px;}
+.polaroid .cap{font-family:var(--accent-font); font-size:16px; text-align:center; margin-top:6px; color:var(--brown);}
+.vinyl{width:100%; aspect-ratio:1/1; border-radius:50%; background:radial-gradient(circle at center, var(--brown) 0 14%, #222 15% 40%, #333 41% 100%); position:relative; display:flex; align-items:center; justify-content:center;}
+.vinyl::after{content:""; width:22%; height:22%; background:var(--paper); border-radius:50%; position:absolute;}
+.book-spine{writing-mode:vertical-rl; background:var(--terracotta); color:#fff; border-radius:4px; padding:10px 6px; font-weight:700; font-size:12px; min-height:120px; display:flex; align-items:center; justify-content:center; text-align:center;}
+.empty-state{text-align:center; padding:50px 20px; color:var(--brown-soft);}
+.empty-state .emoji{font-size:44px; display:block; margin-bottom:10px;}
+.empty-state h3{color:var(--ink); font-family:var(--accent-font); font-size:26px; margin-bottom:4px;}
+
+/* ============================= MODAL ============================= */
+.modal-overlay{position:fixed; inset:0; background:rgba(59,45,32,.45); display:flex; align-items:flex-start; justify-content:center; z-index:100; padding:30px 16px; overflow-y:auto;}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--paper); border-radius:var(--radius); max-width:560px; width:100%; padding:28px; box-shadow:var(--shadow); position:relative; margin:auto;}
+.modal-close{position:absolute; top:16px; right:16px; background:var(--beige); border:none; width:32px; height:32px; border-radius:50%; font-size:15px;}
+.modal h3{margin-bottom:4px;}
+.modal-foot{display:flex; gap:10px; justify-content:flex-end; margin-top:20px;}
+.photo-upload{border:2px dashed var(--line); border-radius:12px; padding:16px; text-align:center; cursor:pointer; font-size:13px; color:var(--brown-soft); position:relative;}
+.photo-preview{max-width:100%; max-height:160px; border-radius:8px; margin-top:10px; display:block;}
+
+/* ============================= TIMELINE / CALENDAR ============================= */
+.timeline{position:relative; padding-left:26px; border-left:3px solid var(--beige);}
+.timeline-year{font-family:var(--accent-font); font-size:26px; color:var(--terracotta); margin:22px 0 10px -32px; background:var(--cream); display:inline-block; padding:2px 10px;}
+.timeline-item{position:relative; margin-bottom:16px; background:var(--paper); border-radius:var(--radius-sm); padding:14px 16px; box-shadow:var(--shadow-sm); border:1px solid var(--line);}
+.timeline-item::before{content:""; position:absolute; left:-32px; top:18px; width:12px; height:12px; border-radius:50%; background:var(--terracotta); border:3px solid var(--cream);}
+.timeline-item .t-date{font-size:12px; color:var(--brown-soft); font-weight:700;}
+.calendar-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px;}
+.cal-dow{text-align:center; font-size:11px; font-weight:800; color:var(--brown-soft); padding-bottom:4px;}
+.cal-cell{aspect-ratio:1/1; border-radius:10px; background:var(--paper); border:1px solid var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:12.5px; font-weight:700; position:relative; cursor:pointer;}
+.cal-cell.empty{background:transparent; border:none; cursor:default;}
+.cal-cell.has-mem{background:var(--beige); border-color:var(--terracotta);}
+.cal-cell .dot{width:6px; height:6px; border-radius:50%; background:var(--terracotta); position:absolute; bottom:6px;}
+.cal-cell.today{outline:2px solid var(--terracotta);}
+.cal-nav{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+
+/* ============================= STATS ============================= */
+.stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px;}
+.stat-card{background:var(--paper); border-radius:var(--radius-sm); padding:18px; text-align:center; border:1px solid var(--line);}
+.stat-card .num{font-family:var(--display); font-size:30px; font-weight:700; color:var(--terracotta);}
+.stat-card .lab{font-size:12.5px; color:var(--brown-soft); font-weight:700;}
+.insight-item{background:var(--beige); border-radius:12px; padding:12px 16px; margin-bottom:8px; font-size:14px;}
+
+/* ============================= ACHIEVEMENTS ============================= */
+.ach-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px;}
+.ach-card{background:var(--paper); border-radius:var(--radius-sm); padding:16px; text-align:center; border:1px solid var(--line); opacity:.4; filter:grayscale(.6);}
+.ach-card.unlocked{opacity:1; filter:none; animation:achPop .5s ease;}
+@keyframes achPop{0%{transform:scale(.85);} 60%{transform:scale(1.06);} 100%{transform:scale(1);}}
+.ach-card .a-emoji{font-size:32px; display:block; margin-bottom:6px;}
+
+/* ============================= TOASTS ============================= */
+#toast-stack{position:fixed; bottom:20px; right:20px; z-index:200; display:flex; flex-direction:column; gap:10px; max-width:320px;}
+.toast{background:var(--brown); color:#fff; padding:12px 18px; border-radius:12px; font-size:14px; font-weight:600; box-shadow:var(--shadow); animation:toastIn .25s ease;}
+@keyframes toastIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+/* ============================= LOCK / PIN ============================= */
+.lock-box{text-align:center; padding:40px; color:var(--brown-soft);}
+.pin-dots{display:flex; gap:10px; justify-content:center; margin:16px 0;}
+.pin-dots span{width:14px; height:14px; border-radius:50%; background:var(--beige); border:1.5px solid var(--line);}
+.pin-dots span.filled{background:var(--terracotta); border-color:var(--terracotta);}
+.pin-keypad{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:220px; margin:10px auto;}
+.pin-keypad button{padding:14px; border-radius:12px; border:1px solid var(--line); background:var(--paper); font-size:18px; font-weight:700;}
+
+/* ============================= RESPONSIVE ============================= */
+@media (max-width: 900px){
+  .sidebar{display:none;}
+  .content{padding-bottom:100px;}
+  .bottom-nav{display:flex;}
+  .house-wrap{flex-direction:column;}
+  .level-panel{width:100%;}
+}
+@media (max-width:520px){
+  .topbar{padding:10px 14px;}
+  .points-badge span.label{display:none;}
+  .item-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+}
+.collections-sheet{position:fixed; inset:0; background:rgba(59,45,32,.45); z-index:90; display:flex; align-items:flex-end;}
+.collections-sheet.hidden{display:none;}
+.sheet-inner{background:var(--paper); width:100%; border-radius:20px 20px 0 0; padding:20px; max-height:70vh; overflow-y:auto;}
+.sheet-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px;}
+.sheet-grid button{background:var(--cream); border:1px solid var(--line); border-radius:14px; padding:14px 8px; font-size:12px; font-weight:700; display:flex; flex-direction:column; gap:6px; align-items:center;}
+.sheet-grid button .b-icon{font-size:22px;}
+
+.otd-banner{background:linear-gradient(120deg,var(--yellow),var(--pink)); border-radius:var(--radius); padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; gap:14px; color:var(--brown); box-shadow:var(--shadow-sm);}
+.otd-banner .otd-text{flex:1;}
+.otd-banner h4{margin:0 0 2px;}
+
+.filter-bar{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+.private-lock-badge{position:absolute; top:10px; right:10px; font-size:14px;}
+</style>
+</head>
+<body>
+
+<div id="toast-stack" aria-live="polite"></div>
+
+<!-- ================= LANDING ================= -->
+<section id="screen-landing" class="screen">
+  <div class="sky-decor" id="sky-decor"></div>
+  <div class="landing-content">
+    <svg class="landing-house" viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of a cozy little house">
+      <ellipse cx="160" cy="240" rx="130" ry="14" fill="var(--brown)" opacity="0.08"/>
+      <rect x="60" y="120" width="200" height="110" rx="8" fill="var(--beige)"/>
+      <polygon points="45,130 160,50 275,130" fill="var(--terracotta)"/>
+      <rect x="140" y="60" width="18" height="28" fill="var(--terracotta)"/>
+      <rect x="90" y="150" width="40" height="40" rx="4" fill="var(--paper)" stroke="var(--brown)" stroke-width="2"/>
+      <line x1="110" y1="150" x2="110" y2="190" stroke="var(--brown)" stroke-width="2"/>
+      <line x1="90" y1="170" x2="130" y2="170" stroke="var(--brown)" stroke-width="2"/>
+      <rect x="190" y="150" width="40" height="40" rx="4" fill="var(--paper)" stroke="var(--brown)" stroke-width="2"/>
+      <line x1="210" y1="150" x2="210" y2="190" stroke="var(--brown)" stroke-width="2"/>
+      <line x1="190" y1="170" x2="230" y2="170" stroke="var(--brown)" stroke-width="2"/>
+      <rect x="145" y="180" width="30" height="50" rx="3" fill="var(--brown)"/>
+      <circle cx="167" cy="205" r="2.5" fill="var(--yellow)"/>
+      <circle cx="204" cy="60" r="14" fill="var(--sage)" opacity="0.6"/>
+      <circle cx="80" cy="110" r="10" fill="var(--sage)" opacity="0.5"/>
+    </svg>
+    <h1>Memory House</h1>
+    <div class="subtitle">A little home for all the moments that made you.</div>
+    <div class="landing-btns">
+      <button class="btn" id="btn-enter-house">Enter My House</button>
+      <button class="btn secondary" id="btn-create-house">Create My House</button>
+    </div>
+    <div class="small-note">Your memories stay in this browser.</div>
+  </div>
+</section>
+
+<!-- ================= AUTH ================= -->
+<section id="screen-auth" class="screen hidden">
+  <div class="card auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login">Log In</button>
+      <button class="auth-tab" id="tab-signup">Sign Up</button>
+    </div>
+
+    <form id="form-login">
+      <label class="field-label" for="login-id">Username or email</label>
+      <input type="text" id="login-id" required autocomplete="username">
+      <label class="field-label" for="login-pw">Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="login-pw" required autocomplete="current-password">
+        <button type="button" class="pw-toggle" data-target="login-pw">Show</button>
+      </div>
+      <div class="checkbox-row"><input type="checkbox" id="login-remember"><label for="login-remember">Remember me</label></div>
+      <div class="form-error" id="login-error"></div>
+      <button class="btn" type="submit" style="width:100%; justify-content:center; margin-top:10px;">Log In</button>
+    </form>
+
+    <form id="form-signup" class="hidden">
+      <label class="field-label" for="su-name">Name</label>
+      <input type="text" id="su-name" required>
+      <label class="field-label" for="su-username">Username</label>
+      <input type="text" id="su-username" required>
+      <label class="field-label" for="su-email">Email</label>
+      <input type="email" id="su-email" required>
+      <label class="field-label" for="su-pw">Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="su-pw" required>
+        <button type="button" class="pw-toggle" data-target="su-pw">Show</button>
+      </div>
+      <label class="field-label" for="su-pw2">Confirm Password</label>
+      <input type="password" id="su-pw2" required>
+      <div class="form-error" id="signup-error"></div>
+      <button class="btn" type="submit" style="width:100%; justify-content:center; margin-top:10px;">Create My House</button>
+    </form>
+
+    <div class="demo-note">🔐 Demo mode — your house is stored locally in this browser, on this device only. This isn't secure storage, so please don't add anything truly sensitive.</div>
+  </div>
+</section>
+
+<!-- ================= ONBOARDING ================= -->
+<section id="screen-onboarding" class="screen hidden">
+  <div class="card onboard-card">
+    <h2 class="accent-font" style="font-size:36px;">Welcome home.</h2>
+    <p>Let's set up your house before you move in.</p>
+    <label class="field-label" for="ob-housename">What should we call your house?</label>
+    <input type="text" id="ob-housename">
+    <label class="field-label">Choose your house style</label>
+    <div class="theme-grid" id="theme-grid"></div>
+    <button class="btn" id="btn-finish-onboarding" style="margin-top:10px;">Move In ✨</button>
+  </div>
+</section>
+
+<!-- ================= APP ================= -->
+<section id="screen-app" class="screen">
+  <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+
+  <div class="main-col">
+    <header class="topbar">
+      <button class="btn ghost small hidden" id="btn-menu-mobile">☰</button>
+      <div class="search-wrap">
+        <input type="text" id="global-search" placeholder="Search your whole life...">
+      </div>
+      <div class="topbar-right">
+        <div class="points-badge">✨ <span id="points-count">0</span> <span class="label">Memory Points</span></div>
+        <button class="btn ghost small" id="btn-random-memory" title="Take me somewhere">✨ Take Me Somewhere</button>
+      </div>
+    </header>
+    <main class="content" id="view-root"></main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Mobile navigation">
+    <button data-view="house" class="active"><span class="b-icon">🏠</span>House</button>
+    <button data-view="memories"><span class="b-icon">📝</span>Memories</button>
+    <button data-view="timeline"><span class="b-icon">📅</span>Timeline</button>
+    <button id="btn-collections"><span class="b-icon">📚</span>Collections</button>
+    <button data-view="settings"><span class="b-icon">⚙️</span>Settings</button>
+  </nav>
+
+  <div class="collections-sheet hidden" id="collections-sheet">
+    <div class="sheet-inner">
+      <h3>Everywhere in your house</h3>
+      <div class="sheet-grid" id="sheet-grid"></div>
+      <button class="btn secondary" style="width:100%; justify-content:center; margin-top:14px;" id="btn-close-sheet">Close</button>
+    </div>
+  </div>
+</section>
+
+<!-- Modal root -->
+<div class="modal-overlay hidden" id="modal-root"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   CONSTANTS
+============================================================ */
+const CATEGORIES = [
+  {id:'personal',label:'Personal',emoji:'❤️'},
+  {id:'family',label:'Family',emoji:'👨‍👩‍👧'},
+  {id:'friends',label:'Friends',emoji:'👯'},
+  {id:'college',label:'College',emoji:'🎓'},
+  {id:'career',label:'Career',emoji:'💻'},
+  {id:'travel',label:'Travel',emoji:'✈️'},
+  {id:'learning',label:'Learning',emoji:'📚'},
+  {id:'music',label:'Music',emoji:'🎵'},
+  {id:'hobby',label:'Hobby',emoji:'🎨'},
+  {id:'growth',label:'Growth',emoji:'🌱'},
+  {id:'other',label:'Other',emoji:'✨'}
+];
+const MOODS = [
+  {id:'happy',label:'Happy',emoji:'😊'},
+  {id:'emotional',label:'Emotional',emoji:'🥹'},
+  {id:'funny',label:'Funny',emoji:'😂'},
+  {id:'loved',label:'Loved',emoji:'😍'},
+  {id:'peaceful',label:'Peaceful',emoji:'😌'},
+  {id:'sad',label:'Sad',emoji:'😭'},
+  {id:'grateful',label:'Grateful',emoji:'🤍'}
+];
+const THEMES = [
+  {id:'cottage',label:'Cottage',emoji:'🏡'},
+  {id:'botanical',label:'Botanical',emoji:'🌿'},
+  {id:'sakura',label:'Sakura',emoji:'🌸'},
+  {id:'library',label:'Old Library',emoji:'📚'},
+  {id:'mansion',label:'Vintage Mansion',emoji:'🏛️'},
+  {id:'midnight',label:'Midnight House',emoji:'🌙'},
+  {id:'cloud',label:'Dreamy Cloud',emoji:'☁️'}
+];
+const LEVELS = [
+  {n:1,name:'Little Home',min:0},
+  {n:2,name:'Cozy Home',min:5},
+  {n:3,name:'Memory House',min:15},
+  {n:4,name:'Story House',min:30},
+  {n:5,name:'Grand Home',min:50},
+  {n:6,name:'Museum',min:75},
+  {n:7,name:'Legacy House',min:100}
+];
+const NAV = [
+  {section:'Home'},
+  {id:'house',label:'House',icon:'🏡'},
+  {id:'memories',label:'Memories',icon:'📝'},
+  {id:'timeline',label:'Timeline',icon:'📅'},
+  {id:'calendar',label:'Calendar',icon:'🗓️'},
+  {section:'Rooms'},
+  {id:'gallery',label:'Gallery',icon:'📸',minLevel:2},
+  {id:'library',label:'Library',icon:'📚'},
+  {id:'office',label:'Office',icon:'💻',minLevel:2},
+  {id:'music',label:'Music Room',icon:'🎵',minLevel:2},
+  {id:'bedroom',label:'Bedroom',icon:'🛏️'},
+  {id:'garden',label:'Garden',icon:'🌸',minLevel:2},
+  {section:'Life'},
+  {id:'people',label:'People',icon:'❤️'},
+  {id:'letters',label:'Letters to Future Me',icon:'💌'},
+  {id:'capsules',label:'Time Capsule',icon:'⏳',minLevel:4},
+  {id:'scrapbook',label:'Scrapbook',icon:'📖',minLevel:2},
+  {id:'favorites',label:'Favorites',icon:'⭐'},
+  {section:'Reflect'},
+  {id:'statistics',label:'Statistics',icon:'📊'},
+  {id:'achievements',label:'Achievements',icon:'🏆'},
+  {id:'museum',label:'Museum Mode',icon:'🏛️',minLevel:3},
+  {id:'settings',label:'Settings',icon:'⚙️'}
+];
+const ACHIEVEMENTS = [
+  {id:'firstMemory',emoji:'🌱',title:'First Memory',desc:'Add your first memory.',check:d=>d.memories.length>=1},
+  {id:'photographer',emoji:'📸',title:'Photographer',desc:'Add 10 photos.',check:d=>d.memories.filter(m=>m.photo).length>=10},
+  {id:'bookworm',emoji:'📚',title:'Bookworm',desc:'Add 10 books.',check:d=>d.books.length>=10},
+  {id:'musicLover',emoji:'🎵',title:'Music Lover',desc:'Add 20 songs.',check:d=>d.songs.length>=20},
+  {id:'growingUp',emoji:'🌸',title:'Growing',desc:'Add 25 memories.',check:d=>d.memories.length>=25},
+  {id:'homeSweet',emoji:'🏡',title:'Home Sweet Home',desc:'Reach House Level 5.',check:d=>getLevel(d).n>=5},
+  {id:'storyKeeper',emoji:'🕰️',title:'Story Keeper',desc:'Add memories from 5 different years.',check:d=>new Set(d.memories.filter(m=>m.date).map(m=>m.date.slice(0,4))).size>=5},
+  {id:'explorer',emoji:'🌍',title:'Explorer',desc:'Add 10 travel memories.',check:d=>d.memories.filter(m=>m.category==='travel').length>=10},
+  {id:'builder',emoji:'💻',title:'Builder',desc:'Add 10 project memories.',check:d=>d.projects.length>=10},
+  {id:'sentimental',emoji:'💖',title:'Sentimental',desc:'Add 50 personal memories.',check:d=>d.memories.filter(m=>m.category==='personal').length>=50},
+  {id:'museumKeeper',emoji:'🏛️',title:'Museum Keeper',desc:'Add 100 memories.',check:d=>d.memories.length>=100}
+];
+const MILESTONE_TYPES = [
+  {id:'graduation',label:'Graduation',emoji:'🎓'},
+  {id:'first-project',label:'First Project',emoji:'💻'},
+  {id:'internship',label:'First Internship',emoji:'💼'},
+  {id:'hackathon',label:'First Hackathon',emoji:'🏆'},
+  {id:'relationship',label:'Important Relationship',emoji:'❤️'},
+  {id:'trip',label:'First Trip',emoji:'✈️'},
+  {id:'birthday',label:'Birthday',emoji:'🎂'},
+  {id:'new-home',label:'New Home',emoji:'🏠'}
+];
+const SURPRISES = [
+  {min:10,emoji:'🐱',label:'A cat has curled up in the house.'},
+  {min:25,emoji:'🦋',label:'Butterflies drift through the garden.'},
+  {min:50,emoji:'🌳',label:'The garden has grown wild and full.'},
+  {min:100,emoji:'🌌',label:'A night sky now glows above the house.'}
+];
+
+function catInfo(id){return CATEGORIES.find(c=>c.id===id)||CATEGORIES[CATEGORIES.length-1];}
+function moodInfo(id){return MOODS.find(m=>m.id===id)||MOODS[0];}
+function uid(){return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function todayISO(){return new Date().toISOString().slice(0,10);}
+function fmtDate(iso){ if(!iso) return ''; const d=new Date(iso+'T00:00:00'); if(isNaN(d)) return iso; return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}); }
+function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ============================================================
+   STORAGE / STATE
+============================================================ */
+const USERS_KEY='mh_users';
+const SESSION_KEY='mh_session';
+
+function loadUsers(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY))||{}; }catch(e){ return {}; } }
+function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function dataKey(username){ return 'mh_data_'+username; }
+
+function emptyData(){
+  return {
+    houseName:'My Memory House', theme:'cottage', points:0,
+    memories:[], books:[], projects:[], songs:[], people:[], dreams:[], letters:[], capsules:[], milestones:[], journal:[], scrapbook:[],
+    achievementsUnlocked:[], settings:{darkMode:false, animations:true, pin:null}
+  };
+}
+function loadData(username){
+  try{
+    const raw = localStorage.getItem(dataKey(username));
+    if(!raw) return emptyData();
+    const d = JSON.parse(raw);
+    const base = emptyData();
+    return Object.assign(base, d, {settings:Object.assign(base.settings, d.settings||{})});
+  }catch(e){ return emptyData(); }
+}
+function saveData(){ if(state.user) localStorage.setItem(dataKey(state.user.username), JSON.stringify(state.data)); }
+
+const state = {
+  user:null, data:null, currentView:'house', pinUnlocked:false, viewParams:{}
+};
+
+function getLevel(d){
+  let lvl = LEVELS[0];
+  const total = totalCount(d);
+  for(const l of LEVELS){ if(total>=l.min) lvl=l; }
+  return lvl;
+}
+function nextLevel(d){
+  const cur = getLevel(d);
+  return LEVELS.find(l=>l.n===cur.n+1) || null;
+}
+function totalCount(d){
+  return d.memories.length + d.books.length + d.projects.length + d.songs.length + d.people.length + d.dreams.length + d.letters.length + d.capsules.length + d.milestones.length + d.journal.length;
+}
+
+/* ============================================================
+   TOASTS
+============================================================ */
+function toast(msg){
+  const stack = document.getElementById('toast-stack');
+  const el = document.createElement('div');
+  el.className='toast'; el.textContent=msg;
+  stack.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(-6px)'; el.style.transition='all .3s'; setTimeout(()=>el.remove(),300); }, 3200);
+}
+
+/* ============================================================
+   POINTS / ACHIEVEMENTS
+============================================================ */
+function addPoints(n){ state.data.points = (state.data.points||0)+n; saveData(); renderTopbar(); }
+
+function checkAchievements(silent){
+  let changed=false;
+  ACHIEVEMENTS.forEach(a=>{
+    const already = state.data.achievementsUnlocked.includes(a.id);
+    if(!already && a.check(state.data)){
+      state.data.achievementsUnlocked.push(a.id);
+      state.data.points += 50;
+      changed=true;
+      if(!silent) toast('Achievement unlocked! 🏆 '+a.title);
+    }
+  });
+  if(changed) saveData();
+  return changed;
+}
+
+/* ============================================================
+   MODAL SYSTEM
+============================================================ */
+const modalRoot = document.getElementById('modal-root');
+function closeModal(){ modalRoot.classList.add('hidden'); modalRoot.innerHTML=''; }
+function openModal(innerHtml, onMount){
+  modalRoot.innerHTML = `<div class="modal" role="dialog" aria-modal="true">
+    <button class="modal-close" aria-label="Close" id="generic-modal-close">✕</button>
+    ${innerHtml}
+  </div>`;
+  modalRoot.classList.remove('hidden');
+  document.getElementById('generic-modal-close').onclick = closeModal;
+  modalRoot.onclick = (e)=>{ if(e.target===modalRoot) closeModal(); };
+  if(onMount) onMount();
+}
+
+/* generic field renderer for simple collection forms */
+function renderField(f, val){
+  const v = val==null?'':val;
+  switch(f.type){
+    case 'text': case 'date': case 'url': case 'number':
+      return `<label class="field-label" for="f_${f.key}">${f.label}</label><input type="${f.type}" id="f_${f.key}" value="${escapeHtml(v)}" ${f.required?'required':''}>`;
+    case 'textarea':
+      return `<label class="field-label" for="f_${f.key}">${f.label}</label><textarea id="f_${f.key}">${escapeHtml(v)}</textarea>`;
+    case 'select':
+      return `<label class="field-label" for="f_${f.key}">${f.label}</label><select id="f_${f.key}">${f.options.map(o=>`<option value="${o.id}" ${o.id===v?'selected':''}>${o.label}</option>`).join('')}</select>`;
+    case 'checkbox':
+      return `<div class="checkbox-row"><input type="checkbox" id="f_${f.key}" ${v?'checked':''}><label for="f_${f.key}">${f.label}</label></div>`;
+    case 'photo':
+      return `<label class="field-label">${f.label}</label>
+        <div class="photo-upload" id="wrap_${f.key}">
+          <input type="file" accept="image/*" id="f_${f.key}" style="display:none">
+          <div id="ph_txt_${f.key}">📷 Click to upload a photo (auto-compressed)</div>
+          <img id="ph_prev_${f.key}" class="photo-preview ${v?'':'hidden'}" src="${v||''}">
+        </div>`;
+    default: return '';
+  }
+}
+function wirePhotoField(f, initial){
+  const wrap = document.getElementById('wrap_'+f.key);
+  const input = document.getElementById('f_'+f.key);
+  const prev = document.getElementById('ph_prev_'+f.key);
+  let value = initial||'';
+  wrap.addEventListener('click', ()=>input.click());
+  input.addEventListener('change', ()=>{
+    const file = input.files[0];
+    if(!file) return;
+    compressImage(file, (dataUrl)=>{
+      value = dataUrl; prev.src=dataUrl; prev.classList.remove('hidden');
+    });
+  });
+  return ()=>value;
+}
+function compressImage(file, cb){
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const maxW = 900;
+      const scale = Math.min(1, maxW/img.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width*scale; canvas.height = img.height*scale;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      cb(canvas.toDataURL('image/jpeg',0.72));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* generic collection add/edit modal */
+function openCollectionForm(collKey, fields, title, existing, onSaved){
+  const item = existing || {};
+  const photoFields = fields.filter(f=>f.type==='photo');
+  openModal(`
+    <h3>${title}</h3>
+    <form id="coll-form">
+      ${fields.map(f=>renderField(f, item[f.key])).join('')}
+      <div class="modal-foot">
+        <button type="button" class="btn secondary" id="coll-cancel">Cancel</button>
+        <button type="submit" class="btn">Save</button>
+      </div>
+    </form>
+  `, ()=>{
+    const getters = {};
+    photoFields.forEach(f=>{ getters[f.key] = wirePhotoField(f, item[f.key]); });
+    document.getElementById('coll-cancel').onclick = closeModal;
+    document.getElementById('coll-form').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const obj = existing ? Object.assign({}, existing) : {id:uid(), createdAt:Date.now()};
+      fields.forEach(f=>{
+        if(f.type==='photo'){ obj[f.key]=getters[f.key](); return; }
+        const el = document.getElementById('f_'+f.key);
+        if(f.type==='checkbox') obj[f.key]=el.checked;
+        else obj[f.key]=el.value;
+      });
+      const arr = state.data[collKey];
+      const idx = arr.findIndex(x=>x.id===obj.id);
+      if(idx>=0) arr[idx]=obj; else arr.push(obj);
+      saveData();
+      onSaved && onSaved(obj, !existing);
+      closeModal();
+    });
+  });
+}
+
+function deleteItem(collKey, id, label){
+  if(!confirm(`Remove "${label||'this'}" from your house? This can't be undone.`)) return;
+  state.data[collKey] = state.data[collKey].filter(x=>x.id!==id);
+  saveData();
+  checkAchievements();
+  render();
+  toast('Removed.');
+}
+
+/* ============================================================
+   AUTH
+============================================================ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if(id==='screen-app') document.getElementById('screen-app').classList.add('active');
+  else document.getElementById('screen-app').classList.remove('active');
+}
+
+function initSkyDecor(){
+  const holder = document.getElementById('sky-decor');
+  let html='';
+  for(let i=0;i<3;i++){
+    html += `<div class="cloud" style="top:${10+i*14}%; left:${-10}%; width:${90+i*30}px; height:${40+i*10}px; animation-duration:${50+i*20}s; animation-delay:${-i*15}s;">
+      <svg viewBox="0 0 100 50"><ellipse cx="30" cy="30" rx="25" ry="16" fill="#fff"/><ellipse cx="55" cy="22" rx="22" ry="18" fill="#fff"/><ellipse cx="75" cy="32" rx="18" ry="13" fill="#fff"/></svg>
+    </div>`;
+  }
+  holder.innerHTML = html;
+}
+initSkyDecor();
+
+document.getElementById('btn-enter-house').onclick = ()=>{
+  const users = loadUsers();
+  const remembered = localStorage.getItem(SESSION_KEY);
+  if(remembered && users[remembered]){
+    logIn(remembered);
+  } else {
+    showScreen('screen-auth');
+    switchAuthTab('login');
+  }
+};
+document.getElementById('btn-create-house').onclick = ()=>{ showScreen('screen-auth'); switchAuthTab('signup'); };
+
+function switchAuthTab(which){
+  document.getElementById('tab-login').classList.toggle('active', which==='login');
+  document.getElementById('tab-signup').classList.toggle('active', which==='signup');
+  document.getElementById('form-login').classList.toggle('hidden', which!=='login');
+  document.getElementById('form-signup').classList.toggle('hidden', which!=='signup');
+}
+document.getElementById('tab-login').onclick = ()=>switchAuthTab('login');
+document.getElementById('tab-signup').onclick = ()=>switchAuthTab('signup');
+
+document.querySelectorAll('.pw-toggle').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = document.getElementById(btn.dataset.target);
+    const isPw = target.type==='password';
+    target.type = isPw?'text':'password';
+    btn.textContent = isPw?'Hide':'Show';
+  });
+});
+
+document.getElementById('form-login').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const idVal = document.getElementById('login-id').value.trim().toLowerCase();
+  const pw = document.getElementById('login-pw').value;
+  const remember = document.getElementById('login-remember').checked;
+  const users = loadUsers();
+  const username = Object.keys(users).find(u => u===idVal || (users[u].email||'').toLowerCase()===idVal);
+  const errEl = document.getElementById('login-error');
+  if(!username || users[username].password !== pw){
+    errEl.textContent = 'That username/email or password doesn\'t match our records.';
+    return;
+  }
+  errEl.textContent='';
+  if(remember) localStorage.setItem(SESSION_KEY, username);
+  logIn(username);
+});
+
+document.getElementById('form-signup').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const name = document.getElementById('su-name').value.trim();
+  const username = document.getElementById('su-username').value.trim().toLowerCase();
+  const email = document.getElementById('su-email').value.trim();
+  const pw = document.getElementById('su-pw').value;
+  const pw2 = document.getElementById('su-pw2').value;
+  const errEl = document.getElementById('signup-error');
+  const users = loadUsers();
+  if(!name||!username||!email||!pw){ errEl.textContent='Please fill in every field.'; return; }
+  if(pw!==pw2){ errEl.textContent='Passwords don\'t match.'; return; }
+  if(users[username]){ errEl.textContent='That username is already taken.'; return; }
+  errEl.textContent='';
+  users[username] = {name, username, email, password:pw, createdAt:Date.now()};
+  saveUsers(users);
+  localStorage.setItem(dataKey(username), JSON.stringify(emptyData()));
+  localStorage.setItem(SESSION_KEY, username);
+  state.user = users[username];
+  state.data = loadData(username);
+  showOnboarding();
+});
+
+function logIn(username){
+  const users = loadUsers();
+  state.user = users[username];
+  state.data = loadData(username);
+  if(!state.data.onboarded){
+    showOnboarding();
+  } else {
+    enterApp();
+  }
+}
+function logOut(){
+  localStorage.removeItem(SESSION_KEY);
+  state.user=null; state.data=null;
+  document.getElementById('login-id').value=''; document.getElementById('login-pw').value='';
+  showScreen('screen-landing');
+}
+
+/* ============================================================
+   ONBOARDING
+============================================================ */
+function showOnboarding(){
+  showScreen('screen-onboarding');
+  document.getElementById('ob-housename').value = `${state.user.name.split(' ')[0]}'s Memory House`;
+  const grid = document.getElementById('theme-grid');
+  grid.innerHTML = THEMES.map(t=>`<button type="button" class="theme-opt ${t.id==='cottage'?'active':''}" data-theme="${t.id}"><span class="emoji">${t.emoji}</span><span class="label">${t.label}</span></button>`).join('');
+  let chosen = 'cottage';
+  grid.querySelectorAll('.theme-opt').forEach(btn=>{
+    btn.onclick = ()=>{ grid.querySelectorAll('.theme-opt').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); chosen=btn.dataset.theme; };
+  });
+  document.getElementById('btn-finish-onboarding').onclick = ()=>{
+    state.data.houseName = document.getElementById('ob-housename').value.trim() || 'My Memory House';
+    state.data.theme = chosen;
+    state.data.onboarded = true;
+    saveData();
+    if(confirm('Would you like to decorate your house with a few memories? We can add some gentle sample content to get you started.')){
+      seedDemoData();
+    }
+    enterApp();
+    toast('Welcome home. 🏡');
+  };
+}
+
+function seedDemoData(){
+  const d = state.data;
+  d.memories.push({id:uid(),title:'First Day at College',date:todayISO(),category:'college',description:'Nervous, excited, and carrying way too many notebooks.',mood:'happy',location:'',people:'',tags:['college','first-year'],photo:'',favorite:true,private:false,createdAt:Date.now()});
+  d.books.push({id:uid(),title:'Atomic Habits',author:'James Clear',coverPhoto:'',rating:'5',status:'finished',favorite:true,notes:'Small habits, big results.',quote:'',date:todayISO(),createdAt:Date.now()});
+  d.projects.push({id:uid(),name:'My First Website',description:'A little personal site I built to learn HTML & CSS.',techStack:'HTML, CSS, JS',date:todayISO(),github:'',live:'',screenshot:'',status:'completed',createdAt:Date.now()});
+  d.songs.push({id:uid(),title:'Favorite Song',artist:'Someone Great',album:'',genre:'',whyMatters:'It always puts me in a good mood.',memory:'',favorite:true,createdAt:Date.now()});
+  d.milestones.push({id:uid(),title:'Completed First Hackathon',type:'hackathon',date:todayISO(),description:'Stayed up all night and loved every minute.',createdAt:Date.now()});
+  addPoints(0);
+  checkAchievements(true);
+  saveData();
+}
+
+/* ============================================================
+   ENTER APP / RENDER SHELL
+============================================================ */
+function enterApp(){
+  showScreen('screen-app');
+  applyTheme();
+  buildSidebar();
+  buildBottomNav();
+  buildCollectionsSheet();
+  renderTopbar();
+  navigate('house');
+  checkOnThisDay();
+}
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', state.data.theme||'cottage');
+  document.body.classList.toggle('dark', !!(state.data.settings && state.data.settings.darkMode));
+}
+
+function buildSidebar(){
+  const el = document.getElementById('sidebar');
+  let html = `<div class="side-brand">🏡 <span>${escapeHtml(state.data.houseName)}</span></div>`;
+  NAV.forEach(item=>{
+    if(item.section){ html += `<div class="nav-section-label">${item.section}</div>`; return; }
+    html += `<button class="nav-item" data-view="${item.id}"><span class="nav-icon">${item.icon}</span>${item.label}</button>`;
+  });
+  el.innerHTML = html;
+  el.querySelectorAll('.nav-item').forEach(btn=>{
+    btn.onclick = ()=>navigate(btn.dataset.view);
+  });
+}
+function buildBottomNav(){
+  document.querySelectorAll('.bottom-nav [data-view]').forEach(btn=>{
+    btn.onclick = ()=>navigate(btn.dataset.view);
+  });
+  document.getElementById('btn-collections').onclick = ()=>document.getElementById('collections-sheet').classList.remove('hidden');
+  document.getElementById('btn-close-sheet').onclick = ()=>document.getElementById('collections-sheet').classList.add('hidden');
+}
+function buildCollectionsSheet(){
+  const grid = document.getElementById('sheet-grid');
+  grid.innerHTML = NAV.filter(n=>!n.section && !['house','memories','timeline','settings'].includes(n.id)).map(n=>
+    `<button data-view="${n.id}"><span class="b-icon">${n.icon}</span>${n.label}</button>`).join('');
+  grid.querySelectorAll('button').forEach(b=>{
+    b.onclick = ()=>{ navigate(b.dataset.view); document.getElementById('collections-sheet').classList.add('hidden'); };
+  });
+}
+function renderTopbar(){
+  document.getElementById('points-count').textContent = (state.data.points||0).toLocaleString();
+}
+document.getElementById('btn-random-memory').onclick = randomMemory;
+document.getElementById('global-search').addEventListener('input', (e)=>{
+  const q = e.target.value.trim();
+  if(q.length>=2){ state.viewParams={q}; navigate('search'); }
+});
+
+function navigate(view){
+  state.currentView = view;
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  document.querySelectorAll('.bottom-nav [data-view]').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  render();
+  document.getElementById('view-root').scrollIntoView({behavior:'instant', block:'start'});
+  window.scrollTo(0,0);
+}
+
+/* ============================================================
+   ROOM LOCK HELPERS
+============================================================ */
+function isLocked(view){
+  const item = NAV.find(n=>n.id===view);
+  if(!item || !item.minLevel) return false;
+  return getLevel(state.data).n < item.minLevel;
+}
+function lockedScreen(view){
+  const item = NAV.find(n=>n.id===view);
+  const need = LEVELS.find(l=>l.n===item.minLevel);
+  return `<div class="lock-box"><span style="font-size:44px;">🔒</span>
+    <h3>This room is still closed</h3>
+    <p>${item.label} unlocks at <strong>House Level ${item.minLevel} — ${need.name}</strong>. Keep adding memories to open the door.</p>
+    <button class="btn" onclick="window.__mh.navigate('memories')">Add a Memory</button></div>`;
+}
+
+/* ============================================================
+   MAIN RENDER DISPATCH
+============================================================ */
+const root = document.getElementById('view-root');
+function render(){
+  const view = state.currentView;
+  if(view!=='search' && isLocked(view)){
+    root.innerHTML = header(NAV.find(n=>n.id===view)) + lockedScreen(view);
+    return;
+  }
+  switch(view){
+    case 'house': return renderHouse();
+    case 'memories': return renderMemories();
+    case 'timeline': return renderTimeline();
+    case 'calendar': return renderCalendar();
+    case 'gallery': return renderGallery();
+    case 'library': return renderLibrary();
+    case 'office': return renderOffice();
+    case 'music': return renderMusic();
+    case 'bedroom': return renderBedroom();
+    case 'garden': return renderGarden();
+    case 'people': return renderPeople();
+    case 'letters': return renderLetters();
+    case 'capsules': return renderCapsules();
+    case 'scrapbook': return renderScrapbook();
+    case 'favorites': return renderFavorites();
+    case 'statistics': return renderStatistics();
+    case 'achievements': return renderAchievements();
+    case 'museum': return renderMuseum();
+    case 'settings': return renderSettings();
+    case 'search': return renderSearch();
+    default: return renderHouse();
+  }
+}
+function header(item, sub){
+  return `<div class="view-header"><div><h2>${item.icon} ${item.label}</h2>${sub?`<div class="sub">${sub}</div>`:''}</div></div>`;
+}
+function emptyBlock(emoji, title, sub, btnLabel, btnFn){
+  return `<div class="empty-state"><span class="emoji">${emoji}</span><h3 class="accent-font">${title}</h3><p>${sub}</p>
+    ${btnLabel?`<button class="btn" onclick="${btnFn}">${btnLabel}</button>`:''}</div>`;
+}
+
+/* ============================================================
+   HOUSE VIEW (signature interactive SVG)
+============================================================ */
+function renderHouse(){
+  const d = state.data;
+  const lvl = getLevel(d);
+  const nxt = nextLevel(d);
+  const total = totalCount(d);
+  const pct = nxt ? Math.min(100, Math.round(((total-lvl.min)/(nxt.min-lvl.min))*100)) : 100;
+  const photoCount = d.memories.filter(m=>m.photo).length;
+
+  root.innerHTML = `
+    <div class="view-header">
+      <div><h2>🏡 ${escapeHtml(d.houseName)}</h2><div class="sub">Click any room to step inside.</div></div>
+    </div>
+    <div class="house-wrap">
+      <div class="house-stage">${houseSVG(d, lvl.n, total)}</div>
+      <div class="level-panel">
+        <div class="card">
+          <div class="pill">HOUSE LEVEL ${lvl.n}</div>
+          <h3 style="margin-top:10px;">${lvl.name}</h3>
+          <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div class="sub">${total} / ${nxt?nxt.min:lvl.min} memories ${nxt? 'to '+nxt.name : '(max level reached)'}</div>
+          <div class="side-actions">
+            <button class="btn" onclick="window.__mh.openAddMemory()">+ Add Memory</button>
+            <button class="btn ghost" onclick="window.__mh.navigate('statistics')">📊 Life in Numbers</button>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <h4>Little details</h4>
+          <p class="sub" style="margin:0;">${photoCount} photos on the walls · ${d.books.length} books on the shelf · ${d.achievementsUnlocked.length} achievements earned</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function houseSVG(d, level, total){
+  const hasCat = total>=10;
+  const hasButterflies = total>=25;
+  const hasNight = total>=50;
+  const hasStars = total>=100;
+  return `<div class="house-svg-holder"><svg viewBox="0 0 700 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustrated house with clickable rooms">
+    ${hasNight?`<rect x="0" y="0" width="700" height="140" fill="#2d2a40" opacity="0.18"/>`:''}
+    ${hasStars?Array.from({length:10}).map((_,i)=>`<circle class="house-flourish" cx="${40+i*63}" cy="${20+ (i%3)*22}" r="1.6" fill="var(--yellow)" style="animation:twinkle ${2+i%3}s ease-in-out infinite;"></circle>`).join(''):''}
+    <g class="house-flourish" style="animation:drift 30s linear infinite alternate;"><ellipse cx="100" cy="40" rx="26" ry="12" fill="#fff" opacity="0.7"/><ellipse cx="120" cy="34" rx="18" ry="10" fill="#fff" opacity="0.7"/></g>
+    <g class="house-flourish" style="animation:drift 40s linear infinite alternate-reverse;"><ellipse cx="560" cy="55" rx="30" ry="13" fill="#fff" opacity="0.6"/></g>
+
+    <ellipse cx="350" cy="430" rx="300" ry="18" fill="var(--brown)" opacity="0.06"/>
+
+    <!-- chimney smoke -->
+    <circle class="house-flourish" cx="520" cy="90" r="6" fill="#fff" opacity="0.5" style="animation:float-y 4s ease-in-out infinite;"/>
+    <circle class="house-flourish" cx="527" cy="75" r="8" fill="#fff" opacity="0.4" style="animation:float-y 5s ease-in-out infinite .5s;"/>
+    <rect x="505" y="95" width="20" height="30" fill="var(--brown)"/>
+
+    <!-- roof -->
+    <polygon points="150,150 350,60 550,150" fill="var(--terracotta)"/>
+
+    <!-- BEDROOM (top) -->
+    ${roomBlock('bedroom',225,150,250,80,'🛏️ Bedroom')}
+    <!-- LIBRARY -->
+    ${roomBlock('library',110,230,150,90,'📚 Library')}
+    <!-- LIVING ROOM -->
+    ${roomBlock('house-living',260,230,180,90,'🛋️ Living Room','memories')}
+    <!-- OFFICE -->
+    ${roomBlock('office',440,230,150,90,'💻 Office')}
+    <!-- MUSIC -->
+    ${roomBlock('music',110,320,150,90,'🎵 Music Room')}
+    <!-- ENTRY / GALLERY -->
+    ${roomBlock('gallery',260,320,180,90,'🖼️ Gallery')}
+    <!-- more -->
+    ${roomBlock('people',440,320,150,90,'❤️ People Wall')}
+
+    <!-- garden strip -->
+    <rect x="70" y="410" width="560" height="20" fill="var(--sage)" opacity="0.55" rx="6"/>
+    <g class="room-hit" data-room="garden" role="button" tabindex="0" aria-label="Garden">
+      <text x="350" y="424" text-anchor="middle" class="room-label" font-size="13" fill="var(--brown)">🌸 Garden</text>
+    </g>
+    ${hasCat?`<text x="600" y="425" font-size="20">🐱</text>`:''}
+    ${hasButterflies?`<text class="house-flourish" x="90" y="405" font-size="16" style="animation:float-y 3s ease-in-out infinite;">🦋</text>`:''}
+  </svg></div>`;
+}
+function roomBlock(id,x,y,w,h,label,targetView){
+  const view = targetView || id;
+  return `<g class="room-hit" data-room="${view}" role="button" tabindex="0" aria-label="${label}">
+    <rect class="room-fill" x="${x}" y="${y}" width="${w}" height="${h}" fill="var(--paper)" stroke="var(--brown)" stroke-width="2" rx="6"/>
+    <text x="${x+w/2}" y="${y+h/2+5}" text-anchor="middle" class="room-label" font-size="14" fill="var(--brown)">${label}</text>
+  </g>`;
+}
+document.addEventListener('click', (e)=>{
+  const hit = e.target.closest('.room-hit');
+  if(hit){ navigate(hit.dataset.room); }
+});
+document.addEventListener('keydown', (e)=>{
+  if((e.key==='Enter'||e.key===' ') && e.target.classList.contains('room-hit')){ e.preventDefault(); navigate(e.target.dataset.room); }
+});
+
+/* ============================================================
+   MEMORIES
+============================================================ */
+function openAddMemory(existing){
+  const item = existing || {};
+  openModal(`
+    <h3>${existing?'Edit Memory':'✨ Add a Memory'}</h3>
+    <form id="mem-form">
+      <label class="field-label" for="mem-title">Memory Title</label>
+      <input type="text" id="mem-title" placeholder="First Day at College" value="${escapeHtml(item.title||'')}" required>
+      <div class="field-row">
+        <div><label class="field-label" for="mem-date">Date</label><input type="date" id="mem-date" value="${item.date||todayISO()}"></div>
+        <div><label class="field-label" for="mem-location">Location (optional)</label><input type="text" id="mem-location" value="${escapeHtml(item.location||'')}"></div>
+      </div>
+      <label class="field-label">Category</label>
+      <div class="choice-row" id="mem-cat-row">${CATEGORIES.map(c=>`<button type="button" class="choice-chip ${item.category===c.id?'active':''}" data-cat="${c.id}">${c.emoji} ${c.label}</button>`).join('')}</div>
+      <label class="field-label" for="mem-desc">Description</label>
+      <textarea id="mem-desc" placeholder="Tell the story...">${escapeHtml(item.description||'')}</textarea>
+      <label class="field-label">Mood</label>
+      <div class="choice-row" id="mem-mood-row">${MOODS.map(m=>`<button type="button" class="choice-chip ${item.mood===m.id?'active':''}" data-mood="${m.id}">${m.emoji} ${m.label}</button>`).join('')}</div>
+      <label class="field-label" for="mem-people">People (optional)</label>
+      <input type="text" id="mem-people" placeholder="Mom, Alex" value="${escapeHtml(item.people||'')}">
+      <label class="field-label" for="mem-tags">Tags (comma separated)</label>
+      <input type="text" id="mem-tags" placeholder="college, friends, first-year" value="${escapeHtml((item.tags||[]).join(', '))}">
+      ${renderField({key:'mem-photo-x',label:'Photo (optional)',type:'photo'}, item.photo).replace(/f_mem-photo-x/g,'mem-photo').replace(/wrap_mem-photo-x/g,'mem-photo-wrap').replace(/ph_txt_mem-photo-x/g,'mem-photo-txt').replace(/ph_prev_mem-photo-x/g,'mem-photo-prev')}
+      <div class="checkbox-row"><input type="checkbox" id="mem-private" ${item.private?'checked':''}><label for="mem-private">🔒 Mark as private</label></div>
+      <div class="modal-foot">
+        <button type="button" class="btn secondary" id="mem-cancel">Cancel</button>
+        <button type="submit" class="btn">Save Memory</button>
+      </div>
+    </form>
+  `, ()=>{
+    let chosenCat = item.category || '';
+    let chosenMood = item.mood || '';
+    document.querySelectorAll('#mem-cat-row .choice-chip').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#mem-cat-row .choice-chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); chosenCat=b.dataset.cat; });
+    document.querySelectorAll('#mem-mood-row .choice-chip').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#mem-mood-row .choice-chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); chosenMood=b.dataset.mood; });
+    const getPhoto = wirePhotoField({key:'mem-photo'}, item.photo);
+    document.getElementById('mem-cancel').onclick = closeModal;
+    document.getElementById('mem-form').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const wasFirst = state.data.memories.length===0;
+      const photoVal = getPhoto();
+      const isPrivate = document.getElementById('mem-private').checked;
+      if(isPrivate && !state.data.settings.pin){ ensurePinSetup(()=>finishSaveMemory()); return; }
+      finishSaveMemory();
+      function finishSaveMemory(){
+        const obj = existing ? Object.assign({}, existing) : {id:uid(), createdAt:Date.now(), favorite:false};
+        obj.title = document.getElementById('mem-title').value.trim() || 'Untitled memory';
+        obj.date = document.getElementById('mem-date').value || todayISO();
+        obj.location = document.getElementById('mem-location').value.trim();
+        obj.category = chosenCat || 'other';
+        obj.description = document.getElementById('mem-desc').value.trim();
+        obj.mood = chosenMood || 'happy';
+        obj.people = document.getElementById('mem-people').value.trim();
+        obj.tags = document.getElementById('mem-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+        obj.photo = photoVal;
+        obj.private = isPrivate;
+        const arr = state.data.memories;
+        const idx = arr.findIndex(x=>x.id===obj.id);
+        if(idx>=0) arr[idx]=obj; else arr.push(obj);
+        saveData();
+        let pts = 10 + (obj.photo?5:0);
+        if(wasFirst) pts += 25;
+        if(state.data.memories.length===100) pts += 100;
+        addPoints(pts);
+        checkAchievements();
+        checkSurprise();
+        closeModal();
+        toast('Memory added to your house 🌸');
+        render();
+      }
+    });
+  });
+}
+function checkSurprise(){
+  const total = state.data.memories.length;
+  SURPRISES.forEach(s=>{ if(total===s.min) toast(s.emoji+' '+s.label); });
+}
+window.openAddMemoryGlobal = openAddMemory;
+
+function ensurePinSetup(cb){
+  openModal(`<h3>🔒 Set a privacy PIN</h3><p>Private memories are hidden behind a simple local PIN. This is a UI privacy feature only, not real encryption — anyone with access to this browser's storage could still read the data.</p>
+    <label class="field-label" for="new-pin">Choose a 4-digit PIN</label>
+    <input type="text" id="new-pin" maxlength="4" inputmode="numeric" placeholder="1234">
+    <div class="modal-foot"><button class="btn secondary" id="pin-skip">Don't mark private</button><button class="btn" id="pin-save">Save PIN</button></div>`, ()=>{
+    document.getElementById('pin-skip').onclick = ()=>{ document.getElementById('mem-private') && (document.getElementById('mem-private').checked=false); closeModal(); cb(); };
+    document.getElementById('pin-save').onclick = ()=>{
+      const v = document.getElementById('new-pin').value.trim();
+      if(!/^\d{4}$/.test(v)){ toast('Please enter exactly 4 digits.'); return; }
+      state.data.settings.pin = v; saveData();
+      closeModal(); cb();
+    };
+  });
+}
+function promptPin(cb){
+  let entered='';
+  function draw(){
+    return `<h3>🔒 Sealed memory</h3><p>Enter your PIN to view this.</p>
+    <div class="pin-dots">${[0,1,2,3].map(i=>`<span class="${i<entered.length?'filled':''}"></span>`).join('')}</div>
+    <div class="pin-keypad" id="pin-keys">
+      ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>`<button type="button" data-k="${k}">${k}</button>`).join('')}
+    </div>
+    <div class="form-error" id="pin-err"></div>`;
+  }
+  openModal(draw(), wire);
+  function wire(){
+    document.querySelectorAll('#pin-keys button').forEach(b=>{
+      b.onclick=()=>{
+        const k = b.dataset.k;
+        if(k==='⌫'){ entered = entered.slice(0,-1); }
+        else if(k!==''){ if(entered.length<4) entered+=k; }
+        if(entered.length===4){
+          if(entered===state.data.settings.pin){ closeModal(); cb(); }
+          else { document.getElementById('pin-err').textContent='Incorrect PIN.'; entered=''; }
+        }
+        modalRoot.querySelector('.modal').innerHTML = `<button class="modal-close" id="generic-modal-close">✕</button>` + draw();
+        document.getElementById('generic-modal-close').onclick = closeModal;
+        wire();
+      };
+    });
+  }
+}
+
+function renderMemories(){
+  const d = state.data;
+  const filterCat = state.viewParams.memCat;
+  let items = d.memories.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  if(filterCat) items = items.filter(m=>m.category===filterCat);
+  root.innerHTML = `
+    ${header({icon:'📝',label:'Memories'},'Every little moment, kept safe.')}
+    <div style="margin-bottom:18px;"><button class="btn" onclick="window.__mh.openAddMemory()">+ Add Memory</button></div>
+    <div class="filter-bar">
+      <button class="choice-chip ${!filterCat?'active':''}" data-fc="">All</button>
+      ${CATEGORIES.map(c=>`<button class="choice-chip ${filterCat===c.id?'active':''}" data-fc="${c.id}">${c.emoji} ${c.label}</button>`).join('')}
+    </div>
+    <div id="mem-list"></div>
+  `;
+  root.querySelectorAll('[data-fc]').forEach(b=>b.onclick=()=>{ state.viewParams.memCat = b.dataset.fc||null; renderMemories(); });
+  const listEl = document.getElementById('mem-list');
+  if(items.length===0){
+    listEl.innerHTML = emptyBlock('🌙','Your house is quiet.','Let\'s put the first little memory on the shelf.','+ Add First Memory',"window.__mh.openAddMemory()");
+    return;
+  }
+  listEl.innerHTML = `<div class="item-grid">${items.map(m=>memoryCard(m)).join('')}</div>`;
+  wireMemoryCards();
+}
+function memoryCard(m){
+  const c = catInfo(m.category); const mo = moodInfo(m.mood);
+  const locked = m.private && !state.pinUnlocked;
+  return `<div class="item-card" data-mem="${m.id}">
+    ${m.private?`<span class="private-lock-badge">${locked?'🔒':'🔓'}</span>`:''}
+    <div class="top-row"><h4>${escapeHtml(m.title)}</h4></div>
+    <div class="meta">${fmtDate(m.date)} · ${c.emoji} ${c.label} · ${mo.emoji}</div>
+    ${locked? `<p class="desc">This memory is sealed. Click to unlock.</p>` : `<p class="desc">${escapeHtml((m.description||'').slice(0,110))}${(m.description||'').length>110?'…':''}</p>`}
+    ${(!locked && m.tags && m.tags.length)?`<div class="tags">${m.tags.map(t=>`<button class="tag-chip" data-tag="${escapeHtml(t)}">#${escapeHtml(t)}</button>`).join('')}</div>`:''}
+    <div class="card-actions">
+      <button class="icon-btn fav ${m.favorite?'active':''}" data-act="fav" title="Favorite">⭐</button>
+      <button class="icon-btn" data-act="edit" title="Edit">✏️</button>
+      <button class="icon-btn" data-act="del" title="Delete">🗑️</button>
+    </div>
+  </div>`;
+}
+function wireMemoryCards(){
+  document.querySelectorAll('[data-mem]').forEach(card=>{
+    const id = card.dataset.mem;
+    const m = state.data.memories.find(x=>x.id===id);
+    if(!m) return;
+    card.querySelectorAll('[data-act]').forEach(btn=>{
+      btn.onclick = (ev)=>{
+        ev.stopPropagation();
+        if(btn.dataset.act==='fav'){ m.favorite=!m.favorite; saveData(); render(); }
+        if(btn.dataset.act==='edit'){ if(m.private && !state.pinUnlocked){ promptPin(()=>{ state.pinUnlocked=true; openAddMemory(m); }); } else openAddMemory(m); }
+        if(btn.dataset.act==='del'){ deleteItem('memories', m.id, m.title); }
+      };
+    });
+    card.querySelectorAll('[data-tag]').forEach(t=>t.onclick=(ev)=>{ ev.stopPropagation(); openTagView(t.dataset.tag); });
+    card.onclick = ()=>{
+      if(m.private && !state.pinUnlocked){ promptPin(()=>viewMemory(m)); }
+      else viewMemory(m);
+    };
+  });
+}
+function viewMemory(m){
+  const c = catInfo(m.category); const mo = moodInfo(m.mood);
+  openModal(`
+    <h3>${escapeHtml(m.title)}</h3>
+    <div class="meta" style="margin-bottom:10px;">${fmtDate(m.date)} · ${c.emoji} ${c.label} · ${mo.emoji} ${mo.label}${m.location?' · 📍 '+escapeHtml(m.location):''}</div>
+    ${m.photo?`<img src="${m.photo}" style="width:100%; border-radius:12px; margin-bottom:12px;">`:''}
+    <p>${escapeHtml(m.description)||'<em>No description.</em>'}</p>
+    ${m.people?`<p><strong>People:</strong> ${escapeHtml(m.people)}</p>`:''}
+    ${(m.tags&&m.tags.length)?`<div class="tags">${m.tags.map(t=>`<span class="tag-chip">#${escapeHtml(t)}</span>`).join('')}</div>`:''}
+    <div class="modal-foot"><button class="btn secondary" onclick="window.__mh.closeModal()">Close</button></div>
+  `);
+}
+function openTagView(tag){
+  state.viewParams.q = tag;
+  navigate('search');
+}
+
+/* ============================================================
+   TIMELINE
+============================================================ */
+function collectAllForTimeline(){
+  const d = state.data;
+  const items = [];
+  d.memories.forEach(m=>items.push({date:m.date, title:m.title, emoji:catInfo(m.category).emoji, type:'Memory'}));
+  d.books.forEach(b=>items.push({date:b.date, title:'Finished "'+b.title+'"', emoji:'📚', type:'Book'}));
+  d.projects.forEach(p=>items.push({date:p.date, title:p.name, emoji:'💻', type:'Project'}));
+  d.milestones.forEach(ms=>items.push({date:ms.date, title:ms.title, emoji:(MILESTONE_TYPES.find(t=>t.id===ms.type)||{}).emoji||'🎓', type:'Milestone'}));
+  d.journal.forEach(j=>items.push({date:j.date, title:'Journal entry', emoji:'📝', type:'Journal'}));
+  return items.filter(i=>i.date).sort((a,b)=>b.date.localeCompare(a.date));
+}
+function renderTimeline(){
+  const items = collectAllForTimeline();
+  root.innerHTML = header({icon:'📅',label:'Timeline'},'Your life, in order.');
+  if(items.length===0){ root.innerHTML += emptyBlock('🕰️','No moments yet.','Add a memory to start your timeline.','+ Add Memory',"window.__mh.openAddMemory()"); return; }
+  let html = '<div class="timeline">';
+  let lastYear='';
+  items.forEach(it=>{
+    const y = it.date.slice(0,4);
+    if(y!==lastYear){ html += `<div class="timeline-year">${y}</div>`; lastYear=y; }
+    html += `<div class="timeline-item"><div class="t-date">${it.emoji} ${fmtDate(it.date)} · ${it.type}</div><strong>${escapeHtml(it.title)}</strong></div>`;
+  });
+  html += '</div>';
+  root.innerHTML += html;
+}
+
+/* ============================================================
+   CALENDAR
+============================================================ */
+function renderCalendar(){
+  if(!state.viewParams.calMonth) state.viewParams.calMonth = new Date().getMonth();
+  if(!state.viewParams.calYear) state.viewParams.calYear = new Date().getFullYear();
+  const y = state.viewParams.calYear, m = state.viewParams.calMonth;
+  const items = collectAllForTimeline();
+  const byDate = {};
+  items.forEach(i=>{ (byDate[i.date] = byDate[i.date]||[]).push(i); });
+  const first = new Date(y,m,1);
+  const startDow = first.getDay();
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  const monthName = first.toLocaleDateString(undefined,{month:'long', year:'numeric'});
+  const todayStr = todayISO();
+
+  let cells = '';
+  for(let i=0;i<startDow;i++) cells += `<div class="cal-cell empty"></div>`;
+  for(let day=1; day<=daysInMonth; day++){
+    const iso = `${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const has = byDate[iso];
+    cells += `<div class="cal-cell ${has?'has-mem':''} ${iso===todayStr?'today':''}" data-date="${iso}">${day}${has?'<span class="dot"></span>':''}</div>`;
+  }
+  root.innerHTML = `${header({icon:'🗓️',label:'Calendar'})}
+    <div class="card">
+      <div class="cal-nav">
+        <button class="btn ghost small" id="cal-prev">‹ Prev</button>
+        <strong>${monthName}</strong>
+        <button class="btn ghost small" id="cal-next">Next ›</button>
+      </div>
+      <div class="calendar-grid">
+        ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-dow">${d}</div>`).join('')}
+        ${cells}
+      </div>
+    </div>
+    <div id="cal-day-detail" style="margin-top:18px;"></div>
+  `;
+  document.getElementById('cal-prev').onclick = ()=>{ let nm=m-1,ny=y; if(nm<0){nm=11;ny--;} state.viewParams.calMonth=nm; state.viewParams.calYear=ny; renderCalendar(); };
+  document.getElementById('cal-next').onclick = ()=>{ let nm=m+1,ny=y; if(nm>11){nm=0;ny++;} state.viewParams.calMonth=nm; state.viewParams.calYear=ny; renderCalendar(); };
+  root.querySelectorAll('.cal-cell[data-date]').forEach(c=>{
+    c.onclick = ()=>{
+      const iso = c.dataset.date;
+      const list = byDate[iso]||[];
+      document.getElementById('cal-day-detail').innerHTML = `<div class="card"><h4>${fmtDate(iso)}</h4>${list.length? list.map(i=>`<div class="insight-item">${i.emoji} ${escapeHtml(i.title)} <span class="meta">· ${i.type}</span></div>`).join('') : '<p class="sub">Nothing recorded on this day.</p>'}</div>`;
+    };
+  });
+}
+
+/* ============================================================
+   GALLERY
+============================================================ */
+function renderGallery(){
+  const photos = state.data.memories.filter(m=>m.photo && (!m.private || state.pinUnlocked));
+  root.innerHTML = header({icon:'📸',label:'Gallery'},'Every picture, framed.');
+  if(photos.length===0){ root.innerHTML += emptyBlock('🖼️','Your gallery needs its first picture.','Add a memory with a photo to fill this wall.','+ Add Memory',"window.__mh.openAddMemory()"); return; }
+  root.innerHTML += `<div class="item-grid">${photos.map(p=>`
+    <div class="polaroid" style="--rot:${(Math.random()*6-3).toFixed(1)}deg" data-view-photo="${p.id}">
+      <div class="photo-area" style="background-image:url('${p.photo}')"></div>
+      <div class="cap">${escapeHtml(p.title)}</div>
+    </div>`).join('')}</div>`;
+  root.querySelectorAll('[data-view-photo]').forEach(el=>{
+    el.onclick = ()=>{ const p = photos.find(x=>x.id===el.dataset.viewPhoto); viewMemory(p); };
+  });
+}
+
+/* ============================================================
+   LIBRARY (books)
+============================================================ */
+const BOOK_FIELDS = [
+  {key:'title',label:'Book title',type:'text',required:true},
+  {key:'author',label:'Author',type:'text'},
+  {key:'coverPhoto',label:'Cover image (optional)',type:'photo'},
+  {key:'rating',label:'Rating (0-5)',type:'number'},
+  {key:'status',label:'Status',type:'select',options:[{id:'want',label:'Want to Read'},{id:'reading',label:'Reading'},{id:'finished',label:'Finished'}]},
+  {key:'favorite',label:'Favorite',type:'checkbox'},
+  {key:'date',label:'Date finished',type:'date'},
+  {key:'notes',label:'Notes',type:'textarea'},
+  {key:'quote',label:'Favorite quote',type:'textarea'}
+];
+function renderLibrary(){
+  const books = state.data.books.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  root.innerHTML = header({icon:'📚',label:'Library'},'The books, articles, and quotes that shaped you.');
+  root.innerHTML += `<div style="margin-bottom:18px;"><button class="btn" id="add-book">+ Add Book</button></div><div id="book-list"></div>`;
+  document.getElementById('add-book').onclick = ()=>openCollectionForm('books', BOOK_FIELDS, 'Add a Book', null, (obj)=>{ addPoints(10); checkAchievements(); render(); toast('Your bookshelf is getting fuller 📚'); });
+  const listEl = document.getElementById('book-list');
+  if(books.length===0){ listEl.innerHTML = emptyBlock('📚','The shelves are waiting.','Add the first book that mattered to you.'); return; }
+  listEl.innerHTML = `<div class="item-grid">${books.map(b=>`
+    <div class="item-card">
+      ${b.coverPhoto?`<img src="${b.coverPhoto}" style="width:100%; border-radius:8px; max-height:140px; object-fit:cover;">`:`<div class="book-spine" style="writing-mode:horizontal-tb; min-height:60px;">📖</div>`}
+      <h4>${escapeHtml(b.title)}</h4>
+      <div class="meta">${escapeHtml(b.author||'')} ${b.rating?'· '+'⭐'.repeat(Math.min(5,+b.rating||0)):''}</div>
+      <span class="pill">${(BOOK_FIELDS[4].options.find(o=>o.id===b.status)||{}).label||''}</span>
+      ${b.quote?`<p class="desc accent-font" style="font-size:15px;">"${escapeHtml(b.quote)}"</p>`:''}
+      <div class="card-actions">
+        <button class="icon-btn fav ${b.favorite?'active':''}" data-fav>⭐</button>
+        <button class="icon-btn" data-edit>✏️</button>
+        <button class="icon-btn" data-del>🗑️</button>
+      </div>
+    </div>`).join('')}</div>`;
+  listEl.querySelectorAll('.item-card').forEach((card,i)=>{
+    const b = books[i];
+    card.querySelector('[data-fav]').onclick=()=>{ b.favorite=!b.favorite; saveData(); render(); };
+    card.querySelector('[data-edit]').onclick=()=>openCollectionForm('books', BOOK_FIELDS, 'Edit Book', b, ()=>render());
+    card.querySelector('[data-del]').onclick=()=>deleteItem('books', b.id, b.title);
+  });
+}
+
+/* ============================================================
+   OFFICE (projects)
+============================================================ */
+const PROJECT_FIELDS = [
+  {key:'name',label:'Project name',type:'text',required:true},
+  {key:'description',label:'Description',type:'textarea'},
+  {key:'techStack',label:'Tech stack',type:'text'},
+  {key:'date',label:'Date',type:'date'},
+  {key:'github',label:'GitHub link',type:'url'},
+  {key:'live',label:'Live link',type:'url'},
+  {key:'screenshot',label:'Screenshot',type:'photo'},
+  {key:'status',label:'Status',type:'select',options:[{id:'idea',label:'Idea'},{id:'building',label:'Building'},{id:'completed',label:'Completed'},{id:'archived',label:'Archived'}]}
+];
+function renderOffice(){
+  const projects = state.data.projects.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  root.innerHTML = header({icon:'💻',label:'Office'},'Projects, milestones, and everything you\'ve built.');
+  root.innerHTML += `<div style="margin-bottom:18px; display:flex; gap:10px; flex-wrap:wrap;"><button class="btn" id="add-project">+ Add Project</button><button class="btn ghost" id="add-milestone">+ Add Milestone</button></div><div id="proj-list"></div><div id="mile-list" style="margin-top:24px;"></div>`;
+  document.getElementById('add-project').onclick = ()=>openCollectionForm('projects', PROJECT_FIELDS, 'Add a Project', null, ()=>{ addPoints(10); checkAchievements(); render(); });
+  document.getElementById('add-milestone').onclick = ()=>openCollectionForm('milestones', MILESTONE_FIELDS, 'Add a Milestone', null, ()=>{ addPoints(20); checkAchievements(); render(); toast('Milestone added 🏆'); });
+  const listEl = document.getElementById('proj-list');
+  if(projects.length===0){ listEl.innerHTML = emptyBlock('💻','Your desk is waiting for something you\'ve built.','Add a project to see it appear here.'); }
+  else{
+    listEl.innerHTML = `<h4>Projects</h4><div class="item-grid">${projects.map(p=>`
+      <div class="item-card">
+        ${p.screenshot?`<img src="${p.screenshot}" style="width:100%; border-radius:8px; max-height:130px; object-fit:cover;">`:''}
+        <h4>${escapeHtml(p.name)}</h4>
+        <div class="meta">${fmtDate(p.date)} ${p.techStack?'· '+escapeHtml(p.techStack):''}</div>
+        <span class="pill">${p.status||'idea'}</span>
+        <p class="desc">${escapeHtml((p.description||'').slice(0,90))}</p>
+        <div class="card-actions">
+          ${p.status==='completed'?'<span class="icon-btn" title="Completed">🏆</span>':''}
+          <button class="icon-btn" data-edit>✏️</button>
+          <button class="icon-btn" data-del>🗑️</button>
+        </div>
+      </div>`).join('')}</div>`;
+    listEl.querySelectorAll('.item-card').forEach((card,i)=>{
+      const p = projects[i];
+      card.querySelector('[data-edit]').onclick=()=>openCollectionForm('projects', PROJECT_FIELDS, 'Edit Project', p, ()=>render());
+      card.querySelector('[data-del]').onclick=()=>deleteItem('projects', p.id, p.name);
+    });
+  }
+  const mileEl = document.getElementById('mile-list');
+  const miles = state.data.milestones.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  if(miles.length){
+    mileEl.innerHTML = `<h4>Life Milestones</h4><div class="item-grid">${miles.map(ms=>{
+      const t = MILESTONE_TYPES.find(x=>x.id===ms.type)||{emoji:'🎓',label:'Milestone'};
+      return `<div class="item-card"><h4>${t.emoji} ${escapeHtml(ms.title)}</h4><div class="meta">${fmtDate(ms.date)} · ${t.label}</div><p class="desc">${escapeHtml(ms.description||'')}</p>
+      <div class="card-actions"><button class="icon-btn" data-medit>✏️</button><button class="icon-btn" data-mdel>🗑️</button></div></div>`;
+    }).join('')}</div>`;
+    mileEl.querySelectorAll('.item-card').forEach((card,i)=>{
+      const ms = miles[i];
+      card.querySelector('[data-medit]').onclick=()=>openCollectionForm('milestones', MILESTONE_FIELDS, 'Edit Milestone', ms, ()=>render());
+      card.querySelector('[data-mdel]').onclick=()=>deleteItem('milestones', ms.id, ms.title);
+    });
+  }
+}
+const MILESTONE_FIELDS = [
+  {key:'title',label:'Milestone title',type:'text',required:true},
+  {key:'type',label:'Type',type:'select',options:MILESTONE_TYPES.map(t=>({id:t.id,label:t.emoji+' '+t.label}))},
+  {key:'date',label:'Date',type:'date'},
+  {key:'description',label:'Description',type:'textarea'}
+];
+
+/* ============================================================
+   MUSIC ROOM
+============================================================ */
+const SONG_FIELDS = [
+  {key:'title',label:'Song',type:'text',required:true},
+  {key:'artist',label:'Artist',type:'text'},
+  {key:'album',label:'Album',type:'text'},
+  {key:'genre',label:'Genre',type:'text'},
+  {key:'whyMatters',label:'Why this song matters',type:'textarea'},
+  {key:'memory',label:'Memory associated with it',type:'textarea'},
+  {key:'favorite',label:'Favorite',type:'checkbox'}
+];
+function renderMusic(){
+  const songs = state.data.songs.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  root.innerHTML = header({icon:'🎵',label:'Music Room'},'The songs behind the moments.');
+  root.innerHTML += `<div style="margin-bottom:18px;"><button class="btn" id="add-song">+ Add Song</button></div><div id="song-list"></div>`;
+  document.getElementById('add-song').onclick = ()=>openCollectionForm('songs', SONG_FIELDS, 'Add a Song', null, ()=>{ addPoints(10); checkAchievements(); render(); });
+  const listEl = document.getElementById('song-list');
+  if(songs.length===0){ listEl.innerHTML = emptyBlock('🎵','The speakers are silent.','Add a song that means something to you.'); return; }
+  listEl.innerHTML = `<div class="item-grid">${songs.map(s=>`
+    <div class="item-card">
+      <div class="vinyl"></div>
+      <h4>${escapeHtml(s.title)}</h4>
+      <div class="meta">${escapeHtml(s.artist||'')}${s.album?' · '+escapeHtml(s.album):''}</div>
+      <p class="desc">${escapeHtml((s.whyMatters||'').slice(0,90))}</p>
+      <div class="card-actions">
+        <button class="icon-btn fav ${s.favorite?'active':''}" data-fav>⭐</button>
+        <button class="icon-btn" data-edit>✏️</button>
+        <button class="icon-btn" data-del>🗑️</button>
+      </div>
+    </div>`).join('')}</div>`;
+  listEl.querySelectorAll('.item-card').forEach((card,i)=>{
+    const s = songs[i];
+    card.querySelector('[data-fav]').onclick=()=>{ s.favorite=!s.favorite; saveData(); render(); };
+    card.querySelector('[data-edit]').onclick=()=>openCollectionForm('songs', SONG_FIELDS, 'Edit Song', s, ()=>render());
+    card.querySelector('[data-del]').onclick=()=>deleteItem('songs', s.id, s.title);
+  });
+}
+
+/* ============================================================
+   BEDROOM (journal + dreams + letters shortcut)
+============================================================ */
+const DREAM_FIELDS = [
+  {key:'title',label:'Dream title',type:'text',required:true},
+  {key:'date',label:'Date',type:'date'},
+  {key:'description',label:'Dream description',type:'textarea'},
+  {key:'mood',label:'Mood',type:'select',options:MOODS.map(m=>({id:m.id,label:m.emoji+' '+m.label}))},
+  {key:'tags',label:'Symbols / tags (comma separated)',type:'text'}
+];
+function renderBedroom(){
+  const j = state.data.journal.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const dreams = state.data.dreams.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const todayEntry = state.data.journal.find(x=>x.date===todayISO());
+  root.innerHTML = `${header({icon:'🛏️',label:'Bedroom'},'Journal, dreams, and quiet thoughts.')}
+    <div class="card" style="margin-bottom:22px;">
+      <h3>📝 How was today?</h3>
+      <button class="btn" id="journal-btn">${todayEntry?'Edit Today\'s Entry':'+ Write Today\'s Entry'}</button>
+    </div>
+    <h4>Recent Journal Entries</h4>
+    <div id="journal-list" style="margin-bottom:26px;"></div>
+    <div class="view-header"><h3>🌙 Dream Diary</h3><button class="btn ghost small" id="add-dream">+ Record a Dream</button></div>
+    <div id="dream-list"></div>
+  `;
+  document.getElementById('journal-btn').onclick = ()=>openJournalForm(todayEntry);
+  document.getElementById('add-dream').onclick = ()=>openCollectionForm('dreams', DREAM_FIELDS.map(f=> f.key==='tags'?Object.assign({},f):f), 'Record a Dream', null, ()=>{ addPoints(5); checkAchievements(); render(); });
+
+  const jList = document.getElementById('journal-list');
+  if(j.length===0) jList.innerHTML = `<p class="sub">No journal entries yet.</p>`;
+  else jList.innerHTML = j.slice(0,8).map(en=>`<div class="insight-item"><strong>${fmtDate(en.date)}</strong> ${moodInfo(en.mood).emoji} — ${escapeHtml((en.entry||'').slice(0,120))}</div>`).join('');
+
+  const dList = document.getElementById('dream-list');
+  if(dreams.length===0){ dList.innerHTML = emptyBlock('🌙','No dreams recorded yet.','Your dream diary is empty — for now.'); return; }
+  dList.innerHTML = `<div class="item-grid">${dreams.map(dr=>`
+    <div class="item-card">
+      <h4>🌙 ${escapeHtml(dr.title)}</h4>
+      <div class="meta">${fmtDate(dr.date)} · ${moodInfo(dr.mood).emoji}</div>
+      <p class="desc">${escapeHtml((dr.description||'').slice(0,100))}</p>
+      <div class="card-actions"><button class="icon-btn" data-edit>✏️</button><button class="icon-btn" data-del>🗑️</button></div>
+    </div>`).join('')}</div>`;
+  dList.querySelectorAll('.item-card').forEach((card,i)=>{
+    const dr = dreams[i];
+    card.querySelector('[data-edit]').onclick=()=>openCollectionForm('dreams', DREAM_FIELDS, 'Edit Dream', dr, ()=>render());
+    card.querySelector('[data-del]').onclick=()=>deleteItem('dreams', dr.id, dr.title);
+  });
+}
+function openJournalForm(existing){
+  const item = existing || {date:todayISO()};
+  openModal(`
+    <h3>📝 How was today?</h3>
+    <form id="journal-form">
+      <input type="hidden" id="j-date" value="${item.date}">
+      <label class="field-label">Mood</label>
+      <div class="choice-row" id="j-mood-row">${MOODS.map(m=>`<button type="button" class="choice-chip ${item.mood===m.id?'active':''}" data-mood="${m.id}">${m.emoji} ${m.label}</button>`).join('')}</div>
+      <label class="field-label" for="j-entry">Tell me about today</label>
+      <textarea id="j-entry" placeholder="How was today?">${escapeHtml(item.entry||'')}</textarea>
+      <label class="field-label" for="j-good">1. Something good</label>
+      <input type="text" id="j-good" value="${escapeHtml(item.good||'')}">
+      <label class="field-label" for="j-hard">2. Something difficult</label>
+      <input type="text" id="j-hard" value="${escapeHtml(item.difficult||'')}">
+      <label class="field-label" for="j-grateful">3. Something I'm grateful for</label>
+      <input type="text" id="j-grateful" value="${escapeHtml(item.grateful||'')}">
+      <div class="modal-foot"><button type="button" class="btn secondary" id="j-cancel">Cancel</button><button type="submit" class="btn">Save Entry</button></div>
+    </form>
+  `, ()=>{
+    let mood = item.mood||'peaceful';
+    document.querySelectorAll('#j-mood-row .choice-chip').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#j-mood-row .choice-chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); mood=b.dataset.mood; });
+    document.getElementById('j-cancel').onclick = closeModal;
+    document.getElementById('journal-form').addEventListener('submit',(e)=>{
+      e.preventDefault();
+      const date = document.getElementById('j-date').value;
+      const obj = {id: existing?existing.id:uid(), date, mood, entry:document.getElementById('j-entry').value.trim(), good:document.getElementById('j-good').value.trim(), difficult:document.getElementById('j-hard').value.trim(), grateful:document.getElementById('j-grateful').value.trim(), createdAt:existing?existing.createdAt:Date.now()};
+      const idx = state.data.journal.findIndex(x=>x.date===date);
+      if(idx>=0) state.data.journal[idx]=obj; else { state.data.journal.push(obj); addPoints(10); }
+      saveData(); checkAchievements(); closeModal(); render(); toast('Journal entry saved 📝');
+    });
+  });
+}
+
+/* ============================================================
+   GARDEN
+============================================================ */
+function renderGarden(){
+  const d = state.data;
+  const n = d.achievementsUnlocked.length;
+  let plant = '🌱';
+  if(n>=20) plant='🌳✨'; else if(n>=10) plant='🌳'; else if(n>=5) plant='🌷'; else if(n>=1) plant='🌱';
+  root.innerHTML = `${header({icon:'🌸',label:'Garden'},'What you\'ve grown, one achievement at a time.')}
+    <div class="card" style="text-align:center; padding:36px;">
+      <div style="font-size:60px;">${plant}</div>
+      <p class="sub">${n} achievement${n===1?'':'s'} unlocked</p>
+    </div>
+    <h4 style="margin-top:24px;">Growing Wall</h4>
+    <div class="item-grid">${ACHIEVEMENTS.map(a=>{
+      const got = d.achievementsUnlocked.includes(a.id);
+      return `<div class="ach-card ${got?'unlocked':''}"><span class="a-emoji">${got?'🌸':'🌱'}</span><strong>${a.title}</strong><p class="meta">${a.desc}</p></div>`;
+    }).join('')}</div>
+  `;
+}
+
+/* ============================================================
+   PEOPLE
+============================================================ */
+const PEOPLE_FIELDS = [
+  {key:'name',label:'Name',type:'text',required:true},
+  {key:'relationship',label:'Relationship',type:'text'},
+  {key:'photo',label:'Photo',type:'photo'},
+  {key:'favoriteMemory',label:'Favorite memory',type:'textarea'},
+  {key:'birthday',label:'Birthday',type:'date'},
+  {key:'notes',label:'Notes',type:'textarea'}
+];
+function renderPeople(){
+  const people = state.data.people.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  root.innerHTML = header({icon:'❤️',label:'People in My Life'},'The people who fill your rooms.');
+  root.innerHTML += `<div style="margin-bottom:18px;"><button class="btn" id="add-person">+ Add Person</button></div><div id="people-list"></div>`;
+  document.getElementById('add-person').onclick = ()=>openCollectionForm('people', PEOPLE_FIELDS, 'Add a Person', null, ()=>{ addPoints(5); checkAchievements(); render(); });
+  const listEl = document.getElementById('people-list');
+  if(people.length===0){ listEl.innerHTML = emptyBlock('🖼️','The frames on the wall are empty.','Add someone who matters to you.'); return; }
+  listEl.innerHTML = `<div class="item-grid">${people.map(p=>`
+    <div class="item-card" style="align-items:center; text-align:center;">
+      <div style="width:70px; height:70px; border-radius:50%; background:${p.photo?`url('${p.photo}') center/cover`:'var(--beige)'}; display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto;">${p.photo?'':'🧑'}</div>
+      <h4>${escapeHtml(p.name)}</h4>
+      <div class="meta">${escapeHtml(p.relationship||'')}</div>
+      <p class="desc">${escapeHtml((p.favoriteMemory||'').slice(0,90))}</p>
+      <div class="card-actions"><button class="icon-btn" data-edit>✏️</button><button class="icon-btn" data-del>🗑️</button></div>
+    </div>`).join('')}</div>`;
+  listEl.querySelectorAll('.item-card').forEach((card,i)=>{
+    const p = people[i];
+    card.querySelector('[data-edit]').onclick=()=>openCollectionForm('people', PEOPLE_FIELDS, 'Edit Person', p, ()=>render());
+    card.querySelector('[data-del]').onclick=()=>deleteItem('people', p.id, p.name);
+  });
+}
+
+/* ============================================================
+   LETTERS TO FUTURE ME
+============================================================ */
+function renderLetters(){
+  const letters = state.data.letters.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  root.innerHTML = header({icon:'💌',label:'Letters to Future Me'},'Messages across time, written entirely by you.');
+  root.innerHTML += `<div style="margin-bottom:18px;"><button class="btn" id="add-letter">+ Write a Letter</button></div><div id="letter-list"></div>`;
+  document.getElementById('add-letter').onclick = openLetterForm;
+  const listEl = document.getElementById('letter-list');
+  if(letters.length===0){ listEl.innerHTML = emptyBlock('💌','No letters yet.','Write something for the version of you who opens this later.'); return; }
+  listEl.innerHTML = `<div class="item-grid">${letters.map(l=>{
+    const sealed = l.openOn && l.openOn > todayISO();
+    return `<div class="item-card">
+      <h4>${sealed?'🔒':'💌'} To my future self</h4>
+      <div class="meta">Written ${fmtDate(l.dateWritten)} ${l.openOn?'· opens '+fmtDate(l.openOn):''}</div>
+      ${sealed? `<p class="desc"><em>This letter is sealed until ${fmtDate(l.openOn)}.</em></p>` : `<p class="desc">${escapeHtml((l.message||'').slice(0,120))}</p>`}
+      <div class="card-actions"><button class="icon-btn" data-view>${sealed?'🔒':'📖'}</button><button class="icon-btn" data-del>🗑️</button></div>
+    </div>`;
+  }).join('')}</div>`;
+  listEl.querySelectorAll('.item-card').forEach((card,i)=>{
+    const l = letters[i];
+    const sealed = l.openOn && l.openOn > todayISO();
+    card.querySelector('[data-view]').onclick=()=>{
+      if(sealed){ toast('This letter is sealed until '+fmtDate(l.openOn)+'.'); return; }
+      openModal(`<h3>💌 Your past self left you a message</h3><div class="meta">Written ${fmtDate(l.dateWritten)}</div><p style="white-space:pre-wrap;">${escapeHtml(l.message)}</p><div class="modal-foot"><button class="btn secondary" onclick="window.__mh.closeModal()">Close</button></div>`);
+    };
+    card.querySelector('[data-del]').onclick=()=>deleteItem('letters', l.id, 'this letter');
+  });
+}
+function openLetterForm(){
+  openModal(`<h3>💌 To my future self…</h3>
+    <form id="letter-form">
+      <label class="field-label" for="l-msg">Your message</label>
+      <textarea id="l-msg" placeholder="Dear future me..." required></textarea>
+      <label class="field-label" for="l-open">Open on (optional future date)</label>
+      <input type="date" id="l-open">
+      <div class="modal-foot"><button type="button" class="btn secondary" id="l-cancel">Cancel</button><button type="submit" class="btn">Seal Letter</button></div>
+    </form>`, ()=>{
+    document.getElementById('l-cancel').onclick = closeModal;
+    document.getElementById('letter-form').addEventListener('submit',(e)=>{
+      e.preventDefault();
+      state.data.letters.push({id:uid(), message:document.getElementById('l-msg').value.trim(), dateWritten:todayISO(), openOn:document.getElementById('l-open').value||'', createdAt:Date.now()});
+      saveData(); addPoints(10); checkAchievements(); closeModal(); render(); toast('Your letter has been sealed 💌');
+    });
+  });
+}
+
+/* ============================================================
+   TIME CAPSULE
+============================================================ */
+function renderCapsules(){
+  const capsules = state.data.capsules.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  root.innerHTML = header({icon:'⏳',label:'Time Capsule'},'Bury something for later.');
+  root.innerHTML += `<div style="margin-bottom:18px;"><button class="btn" id="add-capsule">+ New Time Capsule</button></div><div id="cap-list"></div>`;
+  document.getElementById('add-capsule').onclick = openCapsuleForm;
+  const listEl = document.getElementById('cap-list');
+  if(capsules.length===0){ listEl.innerHTML = emptyBlock('⏳','No capsules buried yet.','Create one to open on a future date.'); return; }
+  listEl.innerHTML = `<div class="item-grid">${capsules.map(c=>{
+    const sealed = c.openOn && c.openOn > todayISO();
+    return `<div class="item-card">
+      <h4>${sealed?'🔒':'✨'} ${escapeHtml(c.title)}</h4>
+      <div class="meta">Buried ${fmtDate(c.date)} · opens ${fmtDate(c.openOn)}</div>
+      ${sealed? '<p class="desc"><em>Sealed until the date above.</em></p>' : `<p class="desc">${escapeHtml((c.message||'').slice(0,100))}</p>`}
+      <div class="card-actions"><button class="icon-btn" data-view>${sealed?'🔒':'✨'}</button><button class="icon-btn" data-del>🗑️</button></div>
+    </div>`;
+  }).join('')}</div>`;
+  listEl.querySelectorAll('.item-card').forEach((card,i)=>{
+    const c = capsules[i];
+    const sealed = c.openOn && c.openOn > todayISO();
+    card.querySelector('[data-view]').onclick=()=>{
+      if(sealed){ toast('Still sealed until '+fmtDate(c.openOn)+'.'); return; }
+      openModal(`<h3>✨ Open Capsule: ${escapeHtml(c.title)}</h3>${c.photo?`<img src="${c.photo}" style="width:100%;border-radius:10px;margin-bottom:10px;">`:''}<p>${escapeHtml(c.message)}</p><div class="modal-foot"><button class="btn secondary" onclick="window.__mh.closeModal()">Close</button></div>`);
+    };
+    card.querySelector('[data-del]').onclick=()=>deleteItem('capsules', c.id, c.title);
+  });
+}
+function openCapsuleForm(){
+  openModal(`<h3>⏳ New Time Capsule</h3>
+    <form id="cap-form">
+      <label class="field-label" for="c-title">Title</label>
+      <input type="text" id="c-title" required>
+      <label class="field-label" for="c-msg">Message</label>
+      <textarea id="c-msg" required></textarea>
+      ${renderField({key:'c-photo-x',label:'Photo (optional)',type:'photo'},'').replace(/f_c-photo-x/g,'c-photo').replace(/wrap_c-photo-x/g,'c-photo-wrap').replace(/ph_txt_c-photo-x/g,'c-photo-txt').replace(/ph_prev_c-photo-x/g,'c-photo-prev')}
+      <label class="field-label" for="c-open">Open on</label>
+      <input type="date" id="c-open" required>
+      <div class="modal-foot"><button type="button" class="btn secondary" id="c-cancel">Cancel</button><button type="submit" class="btn">Bury Capsule</button></div>
+    </form>`, ()=>{
+    const getPhoto = wirePhotoField({key:'c-photo'}, '');
+    document.getElementById('c-cancel').onclick = closeModal;
+    document.getElementById('cap-form').addEventListener('submit',(e)=>{
+      e.preventDefault();
+      state.data.capsules.push({id:uid(), title:document.getElementById('c-title').value.trim(), message:document.getElementById('c-msg').value.trim(), photo:getPhoto(), date:todayISO(), openOn:document.getElementById('c-open').value, createdAt:Date.now()});
+      saveData(); addPoints(10); checkAchievements(); closeModal(); render(); toast('Capsule buried ⏳');
+    });
+  });
+}
+
+/* ============================================================
+   SCRAPBOOK
+============================================================ */
+function renderScrapbook(){
+  const pages = state.data.scrapbook.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  root.innerHTML = header({icon:'📖',label:'Digital Scrapbook'},'Arrange your favorite pieces onto a page.');
+  root.innerHTML += `<div style="margin-bottom:18px;"><button class="btn" id="add-page">+ New Page</button></div><div id="page-list"></div>`;
+  document.getElementById('add-page').onclick = openNewPage;
+  const listEl = document.getElementById('page-list');
+  if(pages.length===0){ listEl.innerHTML = emptyBlock('📖','No pages yet.','Start a page and add photos, quotes, or stickers.'); return; }
+  listEl.innerHTML = pages.map(pg=>`
+    <div class="card" style="margin-bottom:16px; background:${themeBg(pg.theme)}">
+      <div class="top-row"><h4>${escapeHtml(pg.title)}</h4><button class="icon-btn" data-delpage="${pg.id}">🗑️</button></div>
+      <div class="item-grid">
+        ${pg.items.map((it,idx)=>scrapItemHtml(it,pg.id,idx)).join('')}
+      </div>
+      <div class="choice-row" style="margin-top:12px;">
+        <button class="choice-chip" data-addtext="${pg.id}">+ Text</button>
+        <button class="choice-chip" data-addquote="${pg.id}">+ Quote</button>
+        <button class="choice-chip" data-addsticker="${pg.id}">+ Sticker</button>
+        <button class="choice-chip" data-addphoto="${pg.id}">+ Photo</button>
+      </div>
+    </div>`).join('');
+  listEl.querySelectorAll('[data-delpage]').forEach(b=>b.onclick=()=>{ state.data.scrapbook = state.data.scrapbook.filter(p=>p.id!==b.dataset.delpage); saveData(); render(); });
+  listEl.querySelectorAll('[data-addtext]').forEach(b=>b.onclick=()=>addScrapItem(b.dataset.addtext,'text'));
+  listEl.querySelectorAll('[data-addquote]').forEach(b=>b.onclick=()=>addScrapItem(b.dataset.addquote,'quote'));
+  listEl.querySelectorAll('[data-addsticker]').forEach(b=>b.onclick=()=>addScrapItem(b.dataset.addsticker,'sticker'));
+  listEl.querySelectorAll('[data-addphoto]').forEach(b=>b.onclick=()=>addScrapPhoto(b.dataset.addphoto));
+  listEl.querySelectorAll('[data-rmitem]').forEach(b=>b.onclick=()=>{
+    const [pid,idx] = b.dataset.rmitem.split('|');
+    const pg = state.data.scrapbook.find(p=>p.id===pid);
+    pg.items.splice(+idx,1); saveData(); render();
+  });
+}
+function themeBg(t){
+  return {pink:'linear-gradient(135deg,#fbeef0,#f7f1e6)',botanical:'linear-gradient(135deg,#eaf1e2,#f7f1e6)',coffee:'linear-gradient(135deg,#efe4d3,#f7f1e6)',night:'linear-gradient(135deg,#33314a,#413f5c)',vintage:'linear-gradient(135deg,#f0e6cd,#f7f1e6)'}[t] || 'var(--paper)';
+}
+function scrapItemHtml(it,pid,idx){
+  if(it.type==='photo') return `<div class="polaroid"><div class="photo-area" style="background-image:url('${it.content}')"></div><button class="icon-btn" data-rmitem="${pid}|${idx}" style="margin-top:4px;">🗑️</button></div>`;
+  if(it.type==='quote') return `<div class="item-card"><p class="accent-font" style="font-size:18px;">"${escapeHtml(it.content)}"</p><button class="icon-btn" data-rmitem="${pid}|${idx}">🗑️</button></div>`;
+  if(it.type==='sticker') return `<div class="item-card" style="align-items:center; justify-content:center;"><span style="font-size:36px;">${escapeHtml(it.content)}</span><button class="icon-btn" data-rmitem="${pid}|${idx}">🗑️</button></div>`;
+  return `<div class="item-card"><p class="desc">${escapeHtml(it.content)}</p><button class="icon-btn" data-rmitem="${pid}|${idx}">🗑️</button></div>`;
+}
+function openNewPage(){
+  openModal(`<h3>📖 New Scrapbook Page</h3>
+    <form id="page-form">
+      <label class="field-label" for="pg-title">Page title</label>
+      <input type="text" id="pg-title" required>
+      <label class="field-label">Theme</label>
+      <div class="choice-row" id="pg-theme-row">
+        ${[['pink','🌸 Pink'],['botanical','🌿 Botanical'],['coffee','☕ Coffee'],['night','🌙 Night'],['vintage','📚 Vintage']].map(([id,label],i)=>`<button type="button" class="choice-chip ${i===0?'active':''}" data-theme="${id}">${label}</button>`).join('')}
+      </div>
+      <div class="modal-foot"><button type="button" class="btn secondary" id="pg-cancel">Cancel</button><button type="submit" class="btn">Create Page</button></div>
+    </form>`, ()=>{
+    let theme='pink';
+    document.querySelectorAll('#pg-theme-row .choice-chip').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#pg-theme-row .choice-chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); theme=b.dataset.theme; });
+    document.getElementById('pg-cancel').onclick = closeModal;
+    document.getElementById('page-form').addEventListener('submit',(e)=>{
+      e.preventDefault();
+      state.data.scrapbook.push({id:uid(), title:document.getElementById('pg-title').value.trim(), theme, items:[], createdAt:Date.now()});
+      saveData(); closeModal(); render(); toast('New page created 📖');
+    });
+  });
+}
+function addScrapItem(pageId, type){
+  const label = type==='text'?'Text':type==='quote'?'Quote':'Sticker (emoji)';
+  const val = prompt('Add '+label+':');
+  if(!val) return;
+  const pg = state.data.scrapbook.find(p=>p.id===pageId);
+  pg.items.push({type, content:val});
+  saveData(); render();
+}
+function addScrapPhoto(pageId){
+  const input = document.createElement('input');
+  input.type='file'; input.accept='image/*';
+  input.onchange = ()=>{
+    const file = input.files[0]; if(!file) return;
+    compressImage(file, (dataUrl)=>{
+      const pg = state.data.scrapbook.find(p=>p.id===pageId);
+      pg.items.push({type:'photo', content:dataUrl});
+      saveData(); render();
+    });
+  };
+  input.click();
+}
+
+/* ============================================================
+   FAVORITES
+============================================================ */
+function renderFavorites(){
+  const d = state.data;
+  const favMem = d.memories.filter(m=>m.favorite && (!m.private||state.pinUnlocked));
+  const favBooks = d.books.filter(b=>b.favorite);
+  const favSongs = d.songs.filter(s=>s.favorite);
+  root.innerHTML = header({icon:'⭐',label:'My Favorites'});
+  const total = favMem.length+favBooks.length+favSongs.length;
+  if(total===0){ root.innerHTML += emptyBlock('⭐','No favorites yet.','Tap the star on anything you love.'); return; }
+  let html='';
+  if(favMem.length) html += `<h4>Memories</h4><div class="item-grid">${favMem.map(memoryCard).join('')}</div>`;
+  if(favBooks.length) html += `<h4 style="margin-top:20px;">Books</h4><div class="item-grid">${favBooks.map(b=>`<div class="item-card"><h4>${escapeHtml(b.title)}</h4><div class="meta">${escapeHtml(b.author||'')}</div></div>`).join('')}</div>`;
+  if(favSongs.length) html += `<h4 style="margin-top:20px;">Songs</h4><div class="item-grid">${favSongs.map(s=>`<div class="item-card"><div class="vinyl"></div><h4>${escapeHtml(s.title)}</h4><div class="meta">${escapeHtml(s.artist||'')}</div></div>`).join('')}</div>`;
+  root.innerHTML += html;
+  if(favMem.length) wireMemoryCards();
+}
+
+/* ============================================================
+   SEARCH
+============================================================ */
+function renderSearch(){
+  const q = (state.viewParams.q||'').toLowerCase();
+  root.innerHTML = header({icon:'🔍',label:'Search Results'}, q?`Results for "${escapeHtml(q)}"`:'');
+  if(!q){ root.innerHTML += `<p class="sub">Type in the search bar above to look across your whole life.</p>`; return; }
+  const d = state.data;
+  const match = (s)=> (s||'').toLowerCase().includes(q);
+  const results = [];
+  d.memories.forEach(m=>{ if(!m.private||state.pinUnlocked){ if(match(m.title)||match(m.description)||(m.tags||[]).some(match)) results.push({type:'Memory',icon:'📝',title:m.title,onClick:()=>viewMemory(m)}); } });
+  d.books.forEach(b=>{ if(match(b.title)||match(b.author)) results.push({type:'Book',icon:'📚',title:b.title}); });
+  d.projects.forEach(p=>{ if(match(p.name)||match(p.description)) results.push({type:'Project',icon:'💻',title:p.name}); });
+  d.songs.forEach(s=>{ if(match(s.title)||match(s.artist)) results.push({type:'Song',icon:'🎵',title:s.title}); });
+  d.people.forEach(p=>{ if(match(p.name)) results.push({type:'Person',icon:'❤️',title:p.name}); });
+  d.journal.forEach(j=>{ if(match(j.entry)) results.push({type:'Journal',icon:'📝',title:'Entry on '+fmtDate(j.date)}); });
+  if(results.length===0){ root.innerHTML += emptyBlock('🔍','Nothing found.','Try a different word or tag.'); return; }
+  root.innerHTML += `<div class="item-grid">${results.map((r,i)=>`<div class="item-card" data-r="${i}"><h4>${r.icon} ${escapeHtml(r.title)}</h4><div class="meta">${r.type}</div></div>`).join('')}</div>`;
+  root.querySelectorAll('[data-r]').forEach(el=>{ el.onclick=()=>{ const r = results[+el.dataset.r]; r.onClick && r.onClick(); }; });
+}
+
+/* ============================================================
+   STATISTICS
+============================================================ */
+function renderStatistics(){
+  const d = state.data;
+  const totalMem = d.memories.length;
+  const years = new Set(d.memories.filter(m=>m.date).map(m=>m.date.slice(0,4)));
+  const monthCounts = {};
+  d.memories.forEach(m=>{ if(m.date){ const mo=m.date.slice(0,7); monthCounts[mo]=(monthCounts[mo]||0)+1; } });
+  const mostActiveMonth = Object.entries(monthCounts).sort((a,b)=>b[1]-a[1])[0];
+  const moodCounts = {};
+  d.memories.forEach(m=>{ moodCounts[m.mood]=(moodCounts[m.mood]||0)+1; });
+  const topMood = Object.entries(moodCounts).sort((a,b)=>b[1]-a[1])[0];
+  const catCounts = {};
+  d.memories.forEach(m=>{ catCounts[m.category]=(catCounts[m.category]||0)+1; });
+  const topCat = Object.entries(catCounts).sort((a,b)=>b[1]-a[1])[0];
+  const photoPct = totalMem ? Math.round((d.memories.filter(m=>m.photo).length/totalMem)*100) : 0;
+
+  root.innerHTML = `${header({icon:'📊',label:'Life Statistics'},'Your life, in numbers.')}
+    <div class="stat-grid">
+      ${statCard('📸',d.memories.filter(m=>m.photo).length,'Photos')}
+      ${statCard('📚',d.books.length,'Books')}
+      ${statCard('💻',d.projects.length,'Projects')}
+      ${statCard('🎵',d.songs.length,'Songs')}
+      ${statCard('🌸',totalMem,'Memories')}
+      ${statCard('📝',d.journal.length,'Journal Entries')}
+      ${statCard('❤️',d.people.length,'People')}
+      ${statCard('🏆',d.achievementsUnlocked.length,'Achievements')}
+      ${statCard('💌',d.letters.length,'Letters')}
+      ${statCard('🕰️',years.size,'Years Documented')}
+    </div>
+    <h4 style="margin-top:26px;">📈 Insights</h4>
+    <div>
+      ${mostActiveMonth?`<div class="insight-item">You documented the most memories in <strong>${new Date(mostActiveMonth[0]+'-01').toLocaleDateString(undefined,{month:'long',year:'numeric'})}</strong>.</div>`:''}
+      ${topMood?`<div class="insight-item">Your most common mood is <strong>${moodInfo(topMood[0]).label} ${moodInfo(topMood[0]).emoji}</strong>.</div>`:''}
+      ${topCat?`<div class="insight-item"><strong>${catInfo(topCat[0]).label}</strong> is your most documented category.</div>`:''}
+      ${years.size?`<div class="insight-item">You have memories spanning <strong>${years.size}</strong> year${years.size===1?'':'s'}.</div>`:''}
+      ${totalMem?`<div class="insight-item">Photos make up <strong>${photoPct}%</strong> of your memories.</div>`:''}
+      ${totalMem===0?'<p class="sub">Add a few memories to unlock personal insights.</p>':''}
+    </div>
+  `;
+}
+function statCard(emoji,num,label){ return `<div class="stat-card"><div class="num">${emoji} ${num}</div><div class="lab">${label}</div></div>`; }
+
+/* ============================================================
+   ACHIEVEMENTS VIEW
+============================================================ */
+function renderAchievements(){
+  const d = state.data;
+  root.innerHTML = `${header({icon:'🏆',label:'Achievements'},'Unlocked as your house grows.')}
+    <div class="ach-grid">${ACHIEVEMENTS.map(a=>{
+      const got = d.achievementsUnlocked.includes(a.id);
+      return `<div class="ach-card ${got?'unlocked':''}"><span class="a-emoji">${a.emoji}</span><strong>${a.title}</strong><p class="meta">${a.desc}</p>${got?'<span class="pill" style="margin-top:6px;">Unlocked</span>':''}</div>`;
+    }).join('')}</div>`;
+}
+
+/* ============================================================
+   MUSEUM MODE
+============================================================ */
+function renderMuseum(){
+  const d = state.data;
+  root.innerHTML = `${header({icon:'🏛️',label:'Museum Mode'},'A clean look back at your life.')}
+    ${museumSection('My Story', d.memories.length? `${d.memories.length} memories collected, spanning ${new Set(d.memories.filter(m=>m.date).map(m=>m.date.slice(0,4))).size} year(s).` : 'Your story is just beginning.')}
+    ${museumSection('My People', d.people.map(p=>escapeHtml(p.name)).join(', ') || 'No one added yet.')}
+    ${museumSection('My Places', [...new Set(d.memories.map(m=>m.location).filter(Boolean))].map(escapeHtml).join(', ') || 'No places recorded yet.')}
+    ${museumSection('My Books', d.books.map(b=>escapeHtml(b.title)).join(', ') || 'Shelves are empty.')}
+    ${museumSection('My Projects', d.projects.map(p=>escapeHtml(p.name)).join(', ') || 'Nothing built yet.')}
+    ${museumSection('My Music', d.songs.map(s=>escapeHtml(s.title)).join(', ') || 'No songs yet.')}
+    ${museumSection('My Milestones', d.milestones.map(m=>escapeHtml(m.title)).join(', ') || 'No milestones yet.')}
+  `;
+}
+function museumSection(title, body){
+  return `<div class="card" style="margin-bottom:14px;"><h4>${title}</h4><p class="sub" style="margin:0;">${body}</p></div>`;
+}
+
+/* ============================================================
+   SETTINGS
+============================================================ */
+function renderSettings(){
+  const d = state.data;
+  root.innerHTML = `${header({icon:'⚙️',label:'Settings'})}
+    <div class="card" style="max-width:560px;">
+      <h4>Profile</h4>
+      <p class="sub">${escapeHtml(state.user.name)} · ${escapeHtml(state.user.email)}</p>
+      <label class="field-label" for="set-housename">House name</label>
+      <input type="text" id="set-housename" value="${escapeHtml(d.houseName)}">
+      <label class="field-label">House theme</label>
+      <div class="choice-row" id="set-theme-row">${THEMES.map(t=>`<button type="button" class="choice-chip ${d.theme===t.id?'active':''}" data-theme="${t.id}">${t.emoji} ${t.label}</button>`).join('')}</div>
+      <div class="checkbox-row"><input type="checkbox" id="set-dark" ${d.settings.darkMode?'checked':''}><label for="set-dark">Dark mode</label></div>
+      <div class="checkbox-row"><input type="checkbox" id="set-anim" ${d.settings.animations?'checked':''}><label for="set-anim">Animations</label></div>
+      <button class="btn" id="save-settings" style="margin-top:16px;">Save Settings</button>
+    </div>
+
+    <div class="card" style="max-width:560px; margin-top:18px;">
+      <h4>Privacy PIN</h4>
+      <p class="sub">${d.settings.pin? 'A PIN is set for private memories.' : 'No PIN set yet — you\'ll be asked to create one the first time you mark something private.'}</p>
+      ${d.settings.pin? '<button class="btn ghost small" id="clear-pin">Remove PIN</button>' : ''}
+    </div>
+
+    <div class="card" style="max-width:560px; margin-top:18px;">
+      <h4>Export / Import</h4>
+      <p class="sub">Export your whole life as a JSON file, or bring one back in.</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn ghost" id="export-data">📤 Export My Life</button>
+        <button class="btn ghost" id="import-data">📥 Import Data</button>
+        <input type="file" id="import-file" accept="application/json" style="display:none">
+      </div>
+    </div>
+
+    <div class="card" style="max-width:560px; margin-top:18px;">
+      <h4>Danger Zone</h4>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn danger" id="reset-house">Reset House</button>
+        <button class="btn secondary" id="logout-btn">Logout</button>
+      </div>
+    </div>
+  `;
+  let theme = d.theme;
+  document.querySelectorAll('#set-theme-row .choice-chip').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#set-theme-row .choice-chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); theme=b.dataset.theme; });
+  document.getElementById('save-settings').onclick = ()=>{
+    d.houseName = document.getElementById('set-housename').value.trim()||d.houseName;
+    d.theme = theme;
+    d.settings.darkMode = document.getElementById('set-dark').checked;
+    d.settings.animations = document.getElementById('set-anim').checked;
+    saveData(); applyTheme(); buildSidebar(); render();
+    toast('Settings saved.');
+  };
+  const clearPinBtn = document.getElementById('clear-pin');
+  if(clearPinBtn) clearPinBtn.onclick = ()=>{ d.settings.pin=null; saveData(); render(); toast('PIN removed.'); };
+  document.getElementById('export-data').onclick = ()=>{
+    const blob = new Blob([JSON.stringify({exportedAt:new Date().toISOString(), user:state.user.username, data:d}, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=(d.houseName||'memory-house').replace(/\s+/g,'-')+'.json'; a.click();
+    URL.revokeObjectURL(url);
+    toast('Your life has been exported 📤');
+  };
+  document.getElementById('import-data').onclick = ()=>document.getElementById('import-file').click();
+  document.getElementById('import-file').addEventListener('change', (e)=>{
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      try{
+        const parsed = JSON.parse(ev.target.result);
+        const incoming = parsed.data || parsed;
+        if(typeof incoming!=='object') throw new Error('bad format');
+        const base = emptyData();
+        Object.keys(base).forEach(k=>{ if(Array.isArray(base[k])){ if(!Array.isArray(incoming[k])) incoming[k]=[]; } });
+        state.data = Object.assign(base, incoming, {settings:Object.assign(base.settings, incoming.settings||{})});
+        saveData(); applyTheme(); buildSidebar(); render();
+        toast('Data imported successfully 📥');
+      }catch(err){ alert('That file doesn\'t look like a valid Memory House export.'); }
+    };
+    reader.readAsText(file);
+  });
+  document.getElementById('reset-house').onclick = ()=>{
+    if(confirm('This will permanently erase everything in your house. Are you absolutely sure?')){
+      state.data = emptyData();
+      state.data.onboarded = true;
+      saveData();
+      applyTheme(); buildSidebar(); render();
+      toast('Your house has been reset.');
+    }
+  };
+  document.getElementById('logout-btn').onclick = logOut;
+}
+
+/* ============================================================
+   ON THIS DAY / RANDOM MEMORY
+============================================================ */
+function checkOnThisDay(){
+  const today = new Date();
+  const mmdd = String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  const thisYear = today.getFullYear();
+  const matches = state.data.memories.filter(m=>{
+    if(!m.date || m.private) return false;
+    const [y,mo,dy] = m.date.split('-');
+    return (mo+'-'+dy)===mmdd && +y < thisYear;
+  });
+  if(matches.length){
+    const m = matches[0];
+    const yearsAgo = thisYear - +m.date.slice(0,4);
+    toast(`✨ On this day, ${yearsAgo} year${yearsAgo===1?'':'s'} ago… ${m.title}`);
+  }
+}
+function randomMemory(){
+  const pool = state.data.memories.filter(m=>!m.private);
+  if(pool.length===0){ toast('Add a few memories first — then the house will have somewhere to take you.'); return; }
+  const m = pool[Math.floor(Math.random()*pool.length)];
+  openModal(`
+    <div style="text-align:center;">
+      <div style="font-size:34px;">🚪✨</div>
+      <h3 class="accent-font" style="font-size:30px;">Remember this?</h3>
+      <h4>${escapeHtml(m.title)}</h4>
+      <div class="meta">${fmtDate(m.date)} · ${catInfo(m.category).emoji} ${catInfo(m.category).label}</div>
+      ${m.photo?`<img src="${m.photo}" style="width:100%; border-radius:12px; margin:12px 0;">`:''}
+      <p style="text-align:left;">${escapeHtml(m.description)}</p>
+      <button class="btn" onclick="window.__mh.closeModal()">Close the Door</button>
+    </div>
+  `);
+}
+
+/* ============================================================
+   GLOBAL EXPOSE + BOOT
+============================================================ */
+window.__mh = { navigate, openAddMemory, closeModal };
+
+/* auto-login if remembered */
+(function boot(){
+  const remembered = localStorage.getItem(SESSION_KEY);
+  const users = loadUsers();
+  if(remembered && users[remembered]){
+    // stay on landing; user clicks "Enter My House" to continue for clarity, but we can also auto-enter:
+  }
+})();
+
+})();
+</script>
+</body>
+</html>
